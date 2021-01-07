@@ -18,10 +18,14 @@
     "crypto-random-string": "^3.3.0",
     "fastify": "^3.9.2",
     "fastify-swagger": "^3.5.0",
+    "hyperid": "^2.1.0",
+    "pino": "^6.9.0",
+    "pino-pretty": "^4.3.0",
     "rimraf": "^3.0.2",
     "userid": "^1.0.0-beta.6"
   },
   "devDependencies": {
+    "@types/pino": "^6.3.4",
     "@types/rimraf": "^3.0.0",
     "husky": "^4.3.7",
     "jest": "^26.6.3",
