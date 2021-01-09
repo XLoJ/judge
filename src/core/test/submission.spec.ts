@@ -1,9 +1,9 @@
 import * as path from 'path';
 
-import { makeTempDir, rimraf } from '../utils';
+import { makeTempDir, rimraf } from '../../utils';
 import { promises, readFileSync } from 'fs';
-import { Submission } from './submission';
-import { Verdict } from '../verdict';
+import { Submission } from '../submission';
+import { Verdict } from '../../verdict';
 
 describe('Test echo', () => {
   const submission = new Submission('text');
@@ -30,7 +30,7 @@ describe('Test echo', () => {
       maxTime: 10,
       maxMemory: 128,
       stdoutFile: outFile,
-      stderrFile: errFile
+      stderrFile: errFile,
     });
     expect(verdict).toBe(Verdict.Accepted);
     expect(readFileSync(outFile, 'utf8')).toEqual('Hello World\n');
@@ -44,7 +44,7 @@ describe('Test echo', () => {
       maxTime: 10,
       maxMemory: 128,
       stdoutFile: outFile,
-      stderrFile: errFile
+      stderrFile: errFile,
     });
     expect(verdict).toBe(Verdict.RuntimeError);
   });

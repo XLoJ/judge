@@ -1,10 +1,10 @@
 import { readFileSync } from 'fs';
 import * as path from 'path';
-import { randomString, rimraf } from '../utils';
-import { Generator } from './generator';
-import { TestCase } from './testcase';
-import { GEN_PATH } from '../configs';
-import { Verdict } from '../verdict';
+import { randomString, rimraf } from '../../utils';
+import { Generator } from '../generator';
+import { TestCase } from '../testcase';
+import { GEN_PATH } from '../../configs';
+import { Verdict } from '../../verdict';
 
 function readCode(file: string) {
   return readFileSync(

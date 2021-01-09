@@ -1,9 +1,9 @@
 import { promises, readFileSync, writeFileSync } from 'fs';
 import * as path from 'path';
-import { Validator } from './validtor';
-import { Verdict } from '../verdict';
-import { randomString, rimraf } from '../utils';
-import { DATA_PATH, VAL_PATH } from '../configs';
+import { Validator } from '../validtor';
+import { Verdict } from '../../verdict';
+import { randomString, rimraf } from '../../utils';
+import { DATA_PATH, VAL_PATH } from '../../configs';
 
 function readCode(file: string) {
   return readFileSync(

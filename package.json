@@ -12,7 +12,10 @@
     "start": "node dist/index.js",
     "build": "tsc -p tsconfig.json",
     "build:prod": "tsc -p tsconfig.build.json",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
+    "format": "prettier --write \"src/**/*.ts\"",
+    "test": "jest",
+    "test:core": "yarn jest --config test-core.config.json",
+    "test:polygon": "yarn jest --config test-polygon.config.json"
   },
   "dependencies": {
     "crypto-random-string": "^3.3.0",

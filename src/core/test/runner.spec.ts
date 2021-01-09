@@ -1,10 +1,10 @@
 import * as path from 'path';
 import { readFileSync } from 'fs';
 
-import { Verdict } from '../verdict';
-import { Submission } from './submission';
-import { Checker } from './checker';
-import { Runner } from './runner';
+import { Verdict } from '../../verdict';
+import { Submission } from '../submission';
+import { Checker } from '../checker';
+import { Runner } from '../runner';
 
 jest.setTimeout(10 * 1000);
 
