@@ -20,6 +20,7 @@
   "dependencies": {
     "crypto-random-string": "^3.3.0",
     "fastify": "^3.9.2",
+    "fastify-amqp": "^0.5.0",
     "fastify-env": "^2.1.0",
     "fastify-swagger": "^3.5.0",
     "hyperid": "^2.1.0",
