@@ -20,6 +20,7 @@ declare module 'fastify' {
       RMQ_PORT?: number;
       RMQ_USER?: string;
       RMQ_PASS?: string;
+      PREFETCH: number;
     };
   }
 }
@@ -42,7 +43,14 @@ async function bootstrap() {
     },
     schema: {
       type: 'object',
-      required: ['SERVER_NAME', 'PORT', 'HOST', 'USERNAME', 'PASSWORD'],
+      required: [
+        'SERVER_NAME',
+        'PORT',
+        'HOST',
+        'USERNAME',
+        'PASSWORD',
+        'PREFETCH'
+      ],
       properties: {
         SERVER_NAME: { type: 'string' },
         PORT: { type: 'string', default: '3000' },
@@ -52,7 +60,8 @@ async function bootstrap() {
         RMQ_HOST: { type: 'string' },
         RMQ_PORT: { type: 'number' },
         RMQ_USER: { type: 'string' },
-        RMQ_PASS: { type: 'string' }
+        RMQ_PASS: { type: 'string' },
+        PREFETCH: { type: 'number', default: 1 }
       }
     }
   });
@@ -65,6 +74,9 @@ async function bootstrap() {
         user: app.config.RMQ_USER,
         pass: app.config.RMQ_PASS
       });
+
+      app.amqpChannel.prefetch(app.config.PREFETCH);
+
       app.log.info(
         `Connect to Rabbit MQ at amqp://${app.config.RMQ_HOST}:${
           app.config.RMQ_PORT ?? 5672
@@ -76,8 +88,23 @@ async function bootstrap() {
     }
   }
 
+  await app.addHook(
+    'preSerialization',
+    async (request, reply, payload: string | Record<string, any>) => {
+      if (typeof payload === 'string') {
+        return payload;
+      } else {
+        const newPayload = payload;
+        newPayload.reqId = request.id;
+        newPayload.timestamp = new Date().toISOString();
+        newPayload.from = app.config.SERVER_NAME;
+        return newPayload;
+      }
+    }
+  );
+
   app.get('/', async () => {
-    return `This is XLoJ Judge Server from "${app.config.SERVER_NAME}".`;
+    return {};
   });
 
   await app.listen(app.config.PORT, app.config.HOST);

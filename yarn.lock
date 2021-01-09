@@ -484,6 +484,14 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
+"@types/amqplib@^0.5.17":
+  version "0.5.17"
+  resolved "https://registry.yarnpkg.com/@types/amqplib/-/amqplib-0.5.17.tgz#1211f5e01b62006e8a380af258d147de0b3b22e0"
+  integrity sha512-RImqiLP1swDqWBW8UX9iBXVEOw6MYzNmxdXqfemDfdwtUvdTM/W0s2RlSuMVIGkRhaWvpkC9O/N81VzzQwfAbw==
+  dependencies:
+    "@types/bluebird" "*"
+    "@types/node" "*"
+
 "@types/babel__core@^7.0.0", "@types/babel__core@^7.1.7":
   version "7.1.12"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.12.tgz#4d8e9e51eb265552a7e4f1ff2219ab6133bdfb2d"
@@ -516,6 +524,11 @@
   integrity sha512-kSjgDMZONiIfSH1Nxcr5JIRMwUetDki63FSQfpTCz8ogF3Ulqm8+mr5f78dUYs6vMiB6gBusQqfQmBvHZj/lwg==
   dependencies:
     "@babel/types" "^7.3.0"
+
+"@types/bluebird@*":
+  version "3.5.33"
+  resolved "https://registry.yarnpkg.com/@types/bluebird/-/bluebird-3.5.33.tgz#d79c020f283bd50bd76101d7d300313c107325fc"
+  integrity sha512-ndEo1xvnYeHxm7I/5sF6tBvnsA4Tdi3zj1keRKRs12SP+2ye2A27NDJ1B6PqkfMbGAcT+mqQVqbZRIrhfOp5PQ==
 
 "@types/glob@*":
   version "7.1.3"
