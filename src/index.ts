@@ -6,6 +6,8 @@ import fastifyEnv from 'fastify-env';
 import fastifyAmqp from 'fastify-amqp';
 
 import { isDef } from './utils';
+import { registerRouter } from './router';
+import { registerSchema } from './schema';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -106,6 +108,10 @@ async function bootstrap() {
   app.get('/', async () => {
     return {};
   });
+
+  registerSchema(app);
+
+  registerRouter(app);
 
   await app.listen(app.config.PORT, app.config.HOST);
 }

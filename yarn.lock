@@ -1827,6 +1827,13 @@ flatstr@^1.0.12:
   resolved "https://registry.yarnpkg.com/flatstr/-/flatstr-1.0.12.tgz#c2ba6a08173edbb6c9640e3055b95e287ceb5931"
   integrity sha512-4zPxDyhCyiN2wIAtSLI6gc82/EjqZc1onI4Mz/l0pWrAlsSfYH/2ZIcU+e3oA2wDwbzIWNKwa23F8rh6+DRWkw==
 
+fluent-json-schema@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/fluent-json-schema/-/fluent-json-schema-2.0.3.tgz#2a041b04cdd6db237102673a75a1e4e77609dcb9"
+  integrity sha512-Cd0Htv9mJfPVhrdBWNrKoIR/sYc4E2rlS+i3cooYwJi08uEree7daWNw0ZFw1djG4uajDxSjsiHPxAEgzgOqQQ==
+  dependencies:
+    deepmerge "^4.2.2"
+
 for-in@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/for-in/-/for-in-1.0.2.tgz#81068d295a8142ec0ac726c6e2200c30fb6d5e80"
