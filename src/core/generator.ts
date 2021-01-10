@@ -7,7 +7,7 @@ export class Generator extends Submission {
   constructor(id: string, lang: string) {
     super(lang, SubmissionType.GEN, {
       file: id + '.' + LangConfig[lang].compiledExtension,
-      dir: GEN_PATH,
+      dir: GEN_PATH
     });
   }
 

@@ -10,7 +10,7 @@ export class Checker extends Submission {
   constructor(id: string, lang: string) {
     super(lang, SubmissionType.CHK, {
       file: id + '.' + LangConfig[lang].compiledExtension,
-      dir: CHK_PATH,
+      dir: CHK_PATH
     });
   }
 

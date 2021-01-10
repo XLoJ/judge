@@ -14,4 +14,6 @@ chgrp compiler -R /sys/fs/cgroup/memory/NSJAIL /sys/fs/cgroup/cpu/NSJAIL /sys/fs
 chown compiler:compiler ./run/temp ./run/submission
 chown compiler:compiler ./run/checker ./run/interactor ./run/generator ./run/validator
 
-yarn run start:prod
+yarn run build:prod
+
+yarn run start

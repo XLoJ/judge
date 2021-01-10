@@ -10,7 +10,7 @@ import {
   RUN_GROUP_ID,
   OUTPUT_LIMIT,
   ENV,
-  NSJAIL_PATH,
+  NSJAIL_PATH
 } from '../configs';
 import { randomString, makeTempDir, exec, isDef, rimraf } from '../utils';
 import { Verdict } from '../verdict';
@@ -59,7 +59,7 @@ export class Submission {
       ),
       args: langConfig.execute.args.map((s) =>
         String(s).replace('${executableFile}', fileName)
-      ),
+      )
     };
   }
 
@@ -84,7 +84,7 @@ export class Submission {
         code
       ),
       promises.writeFile(outFile, ''),
-      promises.writeFile(errorFile, ''),
+      promises.writeFile(errorFile, '')
     ]);
 
     const compileConfigs = langConfig.compile;
@@ -108,7 +108,7 @@ export class Submission {
           maxTime,
           maxMemory: 1024,
           stdoutFile: outFile,
-          stderrFile: errorFile,
+          stderrFile: errorFile
         });
 
         if (result.verdict !== Verdict.Accepted) {
@@ -150,7 +150,7 @@ export class Submission {
     maxMemory,
     stdinFile = undefined,
     stdoutFile = undefined,
-    stderrFile = undefined,
+    stderrFile = undefined
   }: ISubmissionRunParam) {
     const [rootDir, infoDir] = await Submission.prepareWorkDir();
 
@@ -175,20 +175,25 @@ export class Submission {
               maxMemory
             ),
             executeCommand,
-            ...executeArgs,
+            ...executeArgs
           ],
           {
             stdio: [stdin, stdout, stderr],
             uid: 0,
-            gid: 0,
+            gid: 0
           }
         );
 
         await Submission.closeRedirect(stdin, stdout, stderr);
+
         return await usageToResult(infoDir, maxTime, maxMemory, maxTime * 2);
       } catch (err) {
         // TODO: Logger here
-        throw new SystemError(err.message);
+        if (isDef(err)) {
+          throw new SystemError(err.message);
+        } else {
+          throw new SystemError('Unknown System Error');
+        }
       }
     } catch (err) {
       throw err;
@@ -236,7 +241,7 @@ export class Submission {
       '-R',
       '/etc',
       trusted ? '-B' : '-R',
-      workDir + ':/app',
+      workDir + ':/app'
     ];
 
     const readlTimeLimit = maxTime * 2;
@@ -257,7 +262,7 @@ export class Submission {
       '--rlimit_stack',
       Math.max(maxMemory + 32, 256),
       '--rlimit_fsize',
-      OUTPUT_LIMIT,
+      OUTPUT_LIMIT
     ];
 
     const extraFiles = [];
@@ -272,7 +277,7 @@ export class Submission {
       '/app',
       ...limitArgs,
       ...envArgs,
-      '--',
+      '--'
     ];
   }
 
@@ -292,7 +297,7 @@ export class Submission {
     const result: Array<'ignore' | promises.FileHandle> = [
       'ignore',
       'ignore',
-      'ignore',
+      'ignore'
     ];
     try {
       if (stdinFile) {
@@ -316,13 +321,13 @@ export class Submission {
     stderr: 'ignore' | promises.FileHandle
   ) {
     const closeTasks = [];
-    if (stdin instanceof Object) {
+    if (stdin !== 'ignore') {
       closeTasks.push(stdin.close());
     }
-    if (stdout instanceof Object) {
+    if (stdout !== 'ignore') {
       closeTasks.push(stdout.close());
     }
-    if (stderr instanceof Object) {
+    if (stderr !== 'ignore') {
       closeTasks.push(stderr.close());
     }
     return Promise.all(closeTasks);

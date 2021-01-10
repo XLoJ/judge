@@ -1,3 +1,5 @@
+import { JudgeSubmissionDTO, NotifyFn } from './type';
+
 export abstract class Judger {
   public readonly type: string;
 
@@ -5,5 +7,8 @@ export abstract class Judger {
     this.type = type;
   }
 
-  public abstract judge(): Promise<void>;
+  public abstract judge(
+    fn: NotifyFn,
+    submissionDTO: JudgeSubmissionDTO
+  ): Promise<void>;
 }

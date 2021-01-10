@@ -37,7 +37,7 @@ export async function makeTempDir(): Promise<string> {
 
 interface IExecResult {
   code: number;
-  signal: string;
+  signal: string | null;
 }
 
 export function exec(
@@ -48,10 +48,10 @@ export function exec(
   return new Promise((res, rej) => {
     const process = spawn(command, args, options);
     process.on('close', (code, signal) => {
-      if (isDef(code) && isDef(signal)) {
+      if (isDef(code)) {
         res({ code, signal });
       } else {
-        rej();
+        rej('Process exit code is empty');
       }
     });
     process.on('error', rej);
@@ -66,7 +66,7 @@ export function readFileHead(file: string, maxLength = 255): Promise<string> {
   const inputStream = createReadStream(file, {
     start: 0,
     end: maxLength,
-    encoding: 'utf-8',
+    encoding: 'utf-8'
   });
 
   return new Promise((res, rej) => {

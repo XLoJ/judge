@@ -30,7 +30,7 @@ describe('Test echo', () => {
       maxTime: 10,
       maxMemory: 128,
       stdoutFile: outFile,
-      stderrFile: errFile,
+      stderrFile: errFile
     });
     expect(verdict).toBe(Verdict.Accepted);
     expect(readFileSync(outFile, 'utf8')).toEqual('Hello World\n');
@@ -44,7 +44,7 @@ describe('Test echo', () => {
       maxTime: 10,
       maxMemory: 128,
       stdoutFile: outFile,
-      stderrFile: errFile,
+      stderrFile: errFile
     });
     expect(verdict).toBe(Verdict.RuntimeError);
   });

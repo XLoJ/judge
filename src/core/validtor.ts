@@ -12,7 +12,7 @@ export class Validator extends Submission {
   constructor(id: string, lang: string) {
     super(lang, SubmissionType.VAL, {
       file: id + '.' + LangConfig[lang].compiledExtension,
-      dir: VAL_PATH,
+      dir: VAL_PATH
     });
   }
 
@@ -33,14 +33,14 @@ export class Validator extends Submission {
           {
             mode: '-R',
             src: this.fullFilePath,
-            dst: this.execute.file,
-          },
+            dst: this.execute.file
+          }
         ],
         maxTime: 15,
         maxMemory: 1024,
         stdinFile: testcase.inputFile,
         stderrFile: valErr,
-        trusted: true,
+        trusted: true
       });
       if (result.verdict === Verdict.Accepted) {
         return result;

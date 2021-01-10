@@ -1,7 +1,20 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
 
-import { JudgeSubmissionDTO, JudgeSubmissionSchema } from './judge/type';
+import {
+  JudgeSubmissionDTO,
+  JudgeSubmissionSchema,
+  ResultMessage
+} from './judge/type';
 import { getJudger } from './judge';
+
+async function judge(body: JudgeSubmissionDTO, type?: string) {
+  const judger = getJudger(type);
+  const records: ResultMessage[] = [];
+  await judger.judge((msg) => {
+    records.push(msg);
+  }, body);
+  return { id: body.id, records };
+}
 
 export function registerRouter(app: FastifyInstance) {
   app.post(
@@ -12,9 +25,7 @@ export function registerRouter(app: FastifyInstance) {
       }
     },
     async (request: FastifyRequest<{ Body: JudgeSubmissionDTO }>) => {
-      const judger = getJudger();
-      await judger.judge();
-      return { id: request.body.id };
+      return judge(request.body);
     }
   );
 
@@ -31,9 +42,7 @@ export function registerRouter(app: FastifyInstance) {
         Params: { type: string };
       }>
     ) => {
-      const judger = getJudger();
-      await judger.judge();
-      return { id: request.body.id, type: request.params.type };
+      return judge(request.body, request.params.type);
     }
   );
 }
