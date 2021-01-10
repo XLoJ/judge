@@ -8,6 +8,7 @@ import fastifyAmqp from 'fastify-amqp';
 import { isDef } from './utils';
 import { registerRouter } from './router';
 import { registerSchema } from './schema';
+import { getLogger } from './logger';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -30,9 +31,7 @@ declare module 'fastify' {
 async function bootstrap() {
   const app = fastify({
     bodyLimit: 16 * 1024 * 1024, // 16 MB
-    logger: {
-      prettyPrint: true
-    },
+    logger: getLogger(),
     genReqId() {
       const instance = hyperid({ urlSafe: true });
       return instance.uuid;

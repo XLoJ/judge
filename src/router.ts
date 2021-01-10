@@ -9,9 +9,12 @@ import { getJudger } from './judge';
 
 async function judge(body: JudgeSubmissionDTO, type?: string) {
   const judger = getJudger(type);
-  const records: ResultMessage[] = [];
+  const records: Array<ResultMessage & { timestamp: string }> = [];
   await judger.judge((msg) => {
-    records.push(msg);
+    records.push({
+      timestamp: new Date().toISOString(),
+      ...msg
+    });
   }, body);
   return { id: body.id, records };
 }

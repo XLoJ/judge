@@ -5,6 +5,9 @@ import { Checker, CompileError, Submission } from '../core';
 import { Judger } from './judger';
 import { JudgeSubmissionDTO, JudgingMessage, NotifyFn } from './type';
 import { Runner } from '../core/runner';
+import { getLogger } from '../logger';
+
+const logger = getLogger();
 
 export class ClassicJudger extends Judger {
   static readonly TYPE = 'Classic';
@@ -70,6 +73,21 @@ export class ClassicJudger extends Judger {
         }
       } catch (error) {
         // TODO: handle system error, testcase error ans so on
+        if (error.verdict === Verdict.TestCaseError) {
+          const message = `Can not find testcase "${testcaseId}"`;
+          logger.error(message);
+          await notify({
+            verdict: Verdict.TestCaseError,
+            message: `Can not find testcase "${testcaseId}"`
+          });
+        } else {
+          logger.error(`${error}`);
+          await notify({
+            verdict: Verdict.SystemError,
+            message: 'Unknown'
+          });
+        }
+        break;
       }
     }
 
