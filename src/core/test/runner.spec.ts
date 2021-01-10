@@ -10,7 +10,7 @@ jest.setTimeout(10 * 1000);
 
 function readCode(file: string) {
   return readFileSync(
-    path.join(__dirname, `../../test/assets/aplusb/${file}`),
+    path.join(__dirname, `../../../test/assets/aplusb/${file}`),
     'utf8'
   );
 }

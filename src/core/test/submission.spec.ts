@@ -1,9 +1,11 @@
 import * as path from 'path';
+import { promises, readFileSync } from 'fs';
 
 import { makeTempDir, rimraf } from '../../utils';
-import { promises, readFileSync } from 'fs';
 import { Submission } from '../submission';
 import { Verdict } from '../../verdict';
+
+const AssetPath = '../../../test/assets';
 
 describe('Test echo', () => {
   const submission = new Submission('text');
@@ -61,7 +63,7 @@ describe('Test Compile Cpp', () => {
 
   test('Compile ac.cpp', async () => {
     const code = readFileSync(
-      path.join(__dirname, '../../test/assets/aplusb/ac.cpp'),
+      path.join(__dirname, path.join(AssetPath, 'aplusb/ac.cpp')),
       'utf8'
     );
 
@@ -74,7 +76,7 @@ describe('Test Compile Cpp', () => {
 
   test('Compile ce.cpp', async () => {
     const code = readFileSync(
-      path.join(__dirname, '../../test/assets/aplusb/ce.cpp'),
+      path.join(__dirname, path.join(AssetPath, 'aplusb/ce.cpp')),
       'utf8'
     );
 
@@ -94,7 +96,7 @@ describe('Test Compile Java', () => {
 
   test('Compile Main.java', async () => {
     const code = readFileSync(
-      path.join(__dirname, '../../test/assets/aplusb/Main.java'),
+      path.join(__dirname, path.join(AssetPath, 'aplusb/Main.java')),
       'utf8'
     );
 
@@ -113,7 +115,7 @@ describe('Test Compile Python', () => {
 
   test('Compile a.py', async () => {
     const code = readFileSync(
-      path.join(__dirname, '../../test/assets/aplusb/a.py'),
+      path.join(__dirname, path.join(AssetPath, 'aplusb/a.py')),
       'utf8'
     );
 
