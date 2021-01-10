@@ -4,8 +4,8 @@ import {
   JudgeSubmissionDTO,
   JudgeSubmissionSchema,
   ResultMessage
-} from './judge/type';
-import { getJudger } from './judge';
+} from './type';
+import { getJudger } from './index';
 
 async function judge(body: JudgeSubmissionDTO, type?: string) {
   const judger = getJudger(type);
@@ -19,7 +19,7 @@ async function judge(body: JudgeSubmissionDTO, type?: string) {
   return { id: body.id, records };
 }
 
-export function registerRouter(app: FastifyInstance) {
+export function registerJudgeRouter(app: FastifyInstance) {
   app.post(
     '/judge',
     {

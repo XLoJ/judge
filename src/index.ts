@@ -6,9 +6,10 @@ import fastifyEnv from 'fastify-env';
 import fastifyAmqp from 'fastify-amqp';
 
 import { isDef } from './utils';
-import { registerRouter } from './router';
-import { registerSchema } from './schema';
 import { getLogger } from './logger';
+import { registerSchema } from './schema';
+import { registerJudgeRouter } from './judge/router';
+import { registerPolygonRouter } from './polygon/router';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -28,7 +29,7 @@ declare module 'fastify' {
   }
 }
 
-async function bootstrap() {
+export async function build() {
   const app = fastify({
     bodyLimit: 16 * 1024 * 1024, // 16 MB
     logger: getLogger(),
@@ -110,7 +111,15 @@ async function bootstrap() {
 
   registerSchema(app);
 
-  registerRouter(app);
+  registerJudgeRouter(app);
+
+  registerPolygonRouter(app);
+
+  return app;
+}
+
+async function bootstrap() {
+  const app = await build();
 
   await app.listen(app.config.PORT, app.config.HOST);
 }
