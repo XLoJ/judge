@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import { getLangConfig, PROBLEM_PATH } from '../configs';
 import { TestCase } from './testcase';
 import { Checker } from './checker';
+import { Validator } from './validtor';
 
 export class Problem {
   pid: number;
@@ -40,6 +41,11 @@ export class Problem {
       getLangConfig(lang).compiledExtension
     }`;
     return new Checker(filename, this.localBasePath, lang);
+  }
+
+  validator(name: string, lang: string): Validator {
+    const filename = `${name}.${getLangConfig(lang).compiledExtension}`;
+    return new Validator(filename, this.localBasePath, lang);
   }
 
   async ensureProblem() {

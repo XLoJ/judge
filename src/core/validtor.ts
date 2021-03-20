@@ -1,28 +1,24 @@
 import * as path from 'path';
+import { promises } from 'fs';
+
+import { Verdict } from '../verdict';
+import { makeTempDir, rimraf } from '../utils';
 
 import { Submission } from './submission';
 import { SubmissionType } from './type';
-import { getLangConfig, PROBLEM_PATH } from '../configs';
 import { TestCase } from './testcase';
-import { makeTempDir, rimraf } from '../utils';
-import { Verdict } from '../verdict';
-import { promises } from 'fs';
 
 export class Validator extends Submission {
-  constructor(id: string, lang: string) {
-    // TODO: implement
+  constructor(name: string, basePath: string, lang: string) {
     super(lang, SubmissionType.VAL, {
-      file: id + '.' + getLangConfig(lang).compiledExtension,
-      dir: PROBLEM_PATH
+      file: name,
+      dir: basePath
     });
   }
 
   async clear(): Promise<void> {}
 
-  async validate(testcaseId: string) {
-    // TODO: implement
-    const testcase = new TestCase(testcaseId, PROBLEM_PATH);
-
+  async validate(testcase: TestCase) {
     const runDir = await makeTempDir();
     const valDir = await makeTempDir();
     const valErr = path.join(valDir, 'val.err');

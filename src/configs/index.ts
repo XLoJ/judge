@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { uid, gid } from 'userid';
 
-export { getLangConfig, setLangConfig } from './lang';
+export { getLangConfig, setLangConfig, ILangConfig } from './lang';
 
 export const NSJAIL_PATH = '/bin/nsjail';
 

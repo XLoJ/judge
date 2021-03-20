@@ -6,6 +6,7 @@ import {
   COMPILER_USER_ID,
   ENV,
   getLangConfig,
+  ILangConfig,
   NSJAIL_PATH,
   OUTPUT_LIMIT,
   RUN_GROUP_ID,
@@ -14,16 +15,18 @@ import {
 } from '../configs';
 import { exec, isDef, makeTempDir, randomString, rimraf } from '../utils';
 import { Verdict } from '../verdict';
+import { getLogger } from '../logger';
+import { CompileError, SystemError, TestCaseError } from '../error';
 
 import { IFileBinding, ISubmissionRunParam, SubmissionType } from './type';
-import { CompileError, SystemError, TestCaseError } from '../error';
 import { usageToResult } from './result';
-import { ILangConfig } from '../configs/lang';
 
 const envArgs = ENV.reduce((args: string[], env: string) => {
   args.push('-E', env);
   return args;
 }, []);
+
+const logger = getLogger();
 
 export class Submission {
   lang: string;

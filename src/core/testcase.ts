@@ -1,11 +1,15 @@
-import { promises } from 'fs';
+import { promises, constants } from 'fs';
 import * as path from 'path';
+
 import { makeTempDir, rimraf } from '../utils';
 import { Verdict } from '../verdict';
+import { getLogger } from '../logger';
 
 import { Result } from './result';
 import { Generator } from './generator';
 import { Problem } from './problem';
+
+const logger = getLogger();
 
 export class TestCase {
   name: string;
@@ -20,17 +24,18 @@ export class TestCase {
     this.answerFile = path.join(basePath, `${name}.ans`);
   }
 
-  async ensureTestcase() {}
-
-  // async getInput(): Promise<string> {
-  //   await this.ensureTestcase();
-  //   return await promises.readFile(this.inputFile, 'utf8');
-  // }
-  //
-  // async getAnswer(): Promise<string> {
-  //   await this.ensureTestcase();
-  //   return await promises.readFile(this.answerFile, 'utf8');
-  // }
+  async ensure(problem: Problem) {
+    try {
+      await promises.access(this.inputFile, constants.R_OK);
+    } catch (err) {
+      logger.info(`Fail to access ${this.inputFile}`);
+    }
+    try {
+      await promises.access(this.answerFile, constants.R_OK);
+    } catch (err) {
+      logger.info(`Fail to access ${this.answerFile}`);
+    }
+  }
 
   async writeIn(content: string): Promise<void> {
     try {

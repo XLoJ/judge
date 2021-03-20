@@ -59,7 +59,7 @@ export class ClassicJudge {
       const testcase = problem.testcase(casesVersion, testcaseId);
 
       try {
-        await testcase.ensureTestcase();
+        await testcase.ensure(problem);
 
         const result = await runner.run(testcase, { returnReport });
 

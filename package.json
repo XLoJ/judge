@@ -15,8 +15,8 @@
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "prettier --write \"src/**/*.ts\"",
     "test": "jest",
-    "test:core": "yarn jest --config test-core.config.json",
-    "test:polygon": "yarn jest --config test-polygon.config.json"
+    "test:core": "yarn jest --config test/test-core.config.json",
+    "test:polygon": "yarn jest --config test/test-polygon.config.json"
   },
   "dependencies": {
     "crypto-random-string": "^3.3.0",
