@@ -1,56 +1,43 @@
 import { promises } from 'fs';
 import * as path from 'path';
-
-import { DATA_PATH } from '../configs';
 import { makeTempDir, rimraf } from '../utils';
 import { Verdict } from '../verdict';
 
-// import { Interactor, InteractorRunner } from './interactor';
 import { Result } from './result';
 import { Generator } from './generator';
+import { Problem } from './problem';
 
 export class TestCase {
-  fingerprint: string;
+  name: string;
+  basePath: string;
   inputFile: string;
   answerFile: string;
 
-  constructor(fingerprint: string) {
-    this.fingerprint = fingerprint;
-    this.inputFile = path.join(DATA_PATH, fingerprint, 'in');
-    this.answerFile = path.join(DATA_PATH, fingerprint, 'ans');
+  constructor(name: string, basePath: string) {
+    this.name = name;
+    this.basePath = basePath;
+    this.inputFile = path.join(basePath, `${name}.in`);
+    this.answerFile = path.join(basePath, `${name}.ans`);
   }
 
-  async getInput(): Promise<string> {
-    try {
-      return await promises.readFile(this.inputFile, 'utf8');
-    } catch (err) {
-      return '';
-    }
-  }
+  async ensureTestcase() {}
 
-  async getAnswer(): Promise<string> {
-    try {
-      return await promises.readFile(this.answerFile, 'utf8');
-    } catch (err) {
-      return '';
-    }
-  }
+  // async getInput(): Promise<string> {
+  //   await this.ensureTestcase();
+  //   return await promises.readFile(this.inputFile, 'utf8');
+  // }
+  //
+  // async getAnswer(): Promise<string> {
+  //   await this.ensureTestcase();
+  //   return await promises.readFile(this.answerFile, 'utf8');
+  // }
 
   async writeIn(content: string): Promise<void> {
     try {
-      await promises.mkdir(path.join(DATA_PATH, this.fingerprint));
+      await promises.mkdir(this.inputFile);
     } catch (err) {
     } finally {
       await promises.writeFile(this.inputFile, content, 'utf8');
-    }
-  }
-
-  private async writeAns(): Promise<void> {
-    try {
-      await promises.mkdir(path.join(DATA_PATH, this.fingerprint));
-    } catch (err) {
-    } finally {
-      await promises.writeFile(this.answerFile, '', 'utf8');
     }
   }
 
@@ -140,7 +127,17 @@ export class TestCase {
 
   async clear() {
     try {
-      await rimraf(path.join(DATA_PATH, this.fingerprint));
+      await rimraf(this.inputFile);
+      await rimraf(this.answerFile);
     } catch (err) {}
+  }
+
+  private async writeAns(): Promise<void> {
+    try {
+      await promises.mkdir(this.answerFile);
+    } catch (err) {
+    } finally {
+      await promises.writeFile(this.answerFile, '', 'utf8');
+    }
   }
 }

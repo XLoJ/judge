@@ -1,4 +1,7 @@
-export interface ICompileConfig {
+import { isDef } from '../utils';
+import { SystemError } from '../error';
+
+interface ICompileConfig {
   command: string;
   args: string[];
   out?: string;
@@ -14,7 +17,7 @@ export interface ILangConfig {
   };
 }
 
-export const LangConfig: { [K: string]: ILangConfig } = {
+const LangConfig: Record<string, ILangConfig> = {
   c: {
     sourceFileName: 'sub.c',
     compile: {
@@ -156,4 +159,14 @@ export const LangConfig: { [K: string]: ILangConfig } = {
   }
 };
 
-export const LangList = Reflect.ownKeys(LangConfig);
+export function setLangConfig(lang: string, config: ILangConfig) {
+  LangConfig[lang] = config;
+}
+
+export function getLangConfig(lang: string): ILangConfig {
+  if (isDef(LangConfig[lang])) {
+    return LangConfig[lang];
+  } else {
+    throw new SystemError(`Unsupported language <${lang}>`);
+  }
+}

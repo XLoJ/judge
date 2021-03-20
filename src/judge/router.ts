@@ -5,12 +5,13 @@ import {
   JudgeSubmissionSchema,
   ResultMessage
 } from './type';
-import { getJudger } from './index';
 
-async function judge(body: JudgeSubmissionDTO, type?: string) {
-  const judger = getJudger(type);
+import { ClassicJudge } from './classic';
+
+async function judge(body: JudgeSubmissionDTO) {
+  const classicJudge = new ClassicJudge();
   const records: Array<ResultMessage & { timestamp: string }> = [];
-  await judger.judge((msg) => {
+  await classicJudge.judge((msg) => {
     records.push({
       timestamp: new Date().toISOString(),
       ...msg
@@ -29,23 +30,6 @@ export function registerJudgeRouter(app: FastifyInstance) {
     },
     async (request: FastifyRequest<{ Body: JudgeSubmissionDTO }>) => {
       return judge(request.body);
-    }
-  );
-
-  app.post(
-    '/judge/:type',
-    {
-      schema: {
-        body: JudgeSubmissionSchema
-      }
-    },
-    async (
-      request: FastifyRequest<{
-        Body: JudgeSubmissionDTO;
-        Params: { type: string };
-      }>
-    ) => {
-      return judge(request.body, request.params.type);
     }
   );
 }

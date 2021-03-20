@@ -1,6 +1,7 @@
 import { Submission } from './submission';
 import { Result, ResultWithReport } from './result';
 import { Checker } from './checker';
+import { TestCase } from './testcase';
 
 export enum ProblemType {
   CLASSIC = 'classic'
@@ -47,7 +48,7 @@ export interface IRunner {
   maxMemory: number;
 
   run(
-    testcaseId: string,
+    testcase: TestCase,
     runOptions?: RunOptions
   ): Promise<Result | ResultWithReport>;
 

@@ -2,7 +2,7 @@ import * as path from 'path';
 
 import { Submission } from './submission';
 import { SubmissionType } from './type';
-import { LangConfig, VAL_PATH } from '../configs';
+import { getLangConfig, PROBLEM_PATH } from '../configs';
 import { TestCase } from './testcase';
 import { makeTempDir, rimraf } from '../utils';
 import { Verdict } from '../verdict';
@@ -10,16 +10,18 @@ import { promises } from 'fs';
 
 export class Validator extends Submission {
   constructor(id: string, lang: string) {
+    // TODO: implement
     super(lang, SubmissionType.VAL, {
-      file: id + '.' + LangConfig[lang].compiledExtension,
-      dir: VAL_PATH
+      file: id + '.' + getLangConfig(lang).compiledExtension,
+      dir: PROBLEM_PATH
     });
   }
 
   async clear(): Promise<void> {}
 
   async validate(testcaseId: string) {
-    const testcase = new TestCase(testcaseId);
+    // TODO: implement
+    const testcase = new TestCase(testcaseId, PROBLEM_PATH);
 
     const runDir = await makeTempDir();
     const valDir = await makeTempDir();

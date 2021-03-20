@@ -1,14 +1,8 @@
 import S from 'fluent-json-schema';
 
-import { Verdict, JudgeVerdict } from '../verdict';
+import { JudgeVerdict, Verdict } from '../verdict';
 
 export type NotifyFn = (message: ResultMessage) => Promise<void> | void;
-
-export interface SubmissionInfoDTO {
-  id: string;
-
-  lang: string;
-}
 
 export interface JudgeSubmissionDTO {
   id: string;
@@ -17,7 +11,21 @@ export interface JudgeSubmissionDTO {
 
   maxMemory: number; // mega bytes
 
-  checker: SubmissionInfoDTO;
+  problem: {
+    pid: number;
+
+    name: string;
+
+    checker: {
+      name: string;
+
+      lang: string;
+
+      version: number;
+    };
+  };
+
+  casesVersion: number;
 
   cases: string[];
 
@@ -25,27 +33,32 @@ export interface JudgeSubmissionDTO {
 
   code: string;
 
-  returnReport: boolean;
-
-  isTestAllCases: boolean;
+  // returnReport: boolean; Query Param
+  // isTestAllCases: boolean; Query Param
 }
 
-export const SubmissionInfoSchema = S.object()
-  .id('SubmissionInfo')
-  .prop('id', S.string().required())
-  .prop('lang', S.string().required());
+export const CodeInfoSchema = S.object()
+  .id('CodeInfo')
+  .prop('name', S.string().required())
+  .prop('lang', S.string().default('cpp'))
+  .prop('version', S.number().minimum(1).default(1));
+
+export const JudgeProblemInfoSchema = S.object()
+  .id('JudgeProblemInfo')
+  .prop('pid', S.number().required())
+  .prop('name', S.string().required())
+  .prop('checker', S.ref('CodeInfo'));
 
 export const JudgeSubmissionSchema = S.object()
   .id('JudgeSubmission')
   .prop('id', S.string().required())
   .prop('maxTime', S.number().minimum(1).maximum(16).required())
   .prop('maxMemory', S.number().minimum(32).maximum(2048).required())
-  .prop('checker', S.ref('SubmissionInfo'))
+  .prop('problem', S.ref('JudgeProblemInfo'))
+  .prop('casesVersion', S.number().minimum(1).default(1))
   .prop('cases', S.array().items(S.string()).default([]))
   .prop('lang', S.string().default('cpp'))
-  .prop('code', S.string().required())
-  .prop('returnReport', S.boolean().default(true))
-  .prop('isTestAllCases', S.boolean().default(false));
+  .prop('code', S.string().required());
 
 export interface WaitingMessage {
   verdict: Verdict.Waiting;
@@ -67,9 +80,10 @@ export interface ErrorMessage {
 export interface JudgingMessage {
   verdict: JudgeVerdict;
   testcaseId: string;
-  time: number;
-  memory: number;
+  time: number; // ms
+  memory: number; // KB
   stdout?: string;
+  stderr?: string;
   checkerOut?: string;
 }
 

@@ -16,7 +16,7 @@ import { Submission } from './submission';
 import { Result, ResultWithReport } from './result';
 import { Checker } from './checker';
 import { TestCase } from './testcase';
-import { JudgeError } from './error';
+import { JudgeError } from '../error';
 
 export class Runner implements IRunner {
   submission: Submission;
@@ -56,7 +56,7 @@ export class Runner implements IRunner {
   }
 
   async run(
-    testcaseId: string,
+    testcase: TestCase,
     { returnReport = false }: RunOptions = {}
   ): Promise<Result | ResultWithReport> {
     const [runDir, runOut] = await Promise.all([
@@ -65,8 +65,6 @@ export class Runner implements IRunner {
     ]);
 
     const runErr = await this.makeWriteFile('err');
-
-    const testcase = new TestCase(testcaseId);
 
     try {
       const result: Result | ResultWithReport = await this.submission.run({
@@ -145,7 +143,7 @@ export class Runner implements IRunner {
 
       return Checker.getVerdict(chkResult);
     } catch (err) {
-      // handle judge error message
+      // TODO: handle judge error message
       if (err instanceof JudgeError) {
         err.message = await readFileHead(chkOut);
       }

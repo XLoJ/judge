@@ -1,36 +1,39 @@
 import { b64decode } from '../utils';
 import { Verdict } from '../verdict';
-import { Checker, CompileError, Submission } from '../core';
-
-import { Judger } from './judger';
-import { JudgeSubmissionDTO, JudgingMessage, NotifyFn } from './type';
-import { Runner } from '../core/runner';
 import { getLogger } from '../logger';
+import { CompileError } from '../error';
+import { Submission } from '../core';
+import { Runner } from '../core/runner';
+import { Problem } from '../core/problem';
+
+import { JudgeSubmissionDTO, JudgingMessage, NotifyFn } from './type';
+
+interface JudgeOptions {
+  returnReport?: boolean;
+  isTestAllCases?: boolean;
+}
 
 const logger = getLogger();
 
-export class ClassicJudger extends Judger {
+export class ClassicJudge {
   static readonly TYPE = 'Classic';
-
-  constructor() {
-    super(ClassicJudger.TYPE);
-  }
 
   async judge(
     notify: NotifyFn,
     {
       maxTime,
       maxMemory,
-      checker: checkerInfo,
+      problem: problemInfo,
       code: b64Code,
       lang,
       cases,
-      returnReport,
-      isTestAllCases
-    }: JudgeSubmissionDTO
+      casesVersion
+    }: JudgeSubmissionDTO,
+    { returnReport = true, isTestAllCases = false }: JudgeOptions = {}
   ): Promise<void> {
     const code = b64decode(b64Code);
     const submission = new Submission(lang);
+    const problem = new Problem(problemInfo.pid, problemInfo.name);
 
     // Compile
     await notify({ verdict: Verdict.Compiling });
@@ -43,12 +46,22 @@ export class ClassicJudger extends Judger {
       return;
     }
 
-    const checker = new Checker(checkerInfo.id, checkerInfo.lang);
+    await problem.ensureTestcasesBasePath(casesVersion);
+
+    const checker = problem.checker(
+      problemInfo.checker.version,
+      problemInfo.checker.name,
+      problemInfo.checker.lang
+    );
     const runner = new Runner(submission, checker, maxTime, maxMemory);
 
     for (const testcaseId of cases) {
+      const testcase = problem.testcase(casesVersion, testcaseId);
+
       try {
-        const result = await runner.run(testcaseId, { returnReport });
+        await testcase.ensureTestcase();
+
+        const result = await runner.run(testcase, { returnReport });
 
         const message: JudgingMessage = {
           testcaseId,
@@ -75,7 +88,9 @@ export class ClassicJudger extends Judger {
         // TODO: handle system error, testcase error ans so on
         if (error.verdict === Verdict.TestCaseError) {
           const message = `Can not find testcase "${testcaseId}"`;
-          logger.error(message);
+          logger.error(
+            `Can not find testcase "${testcaseId}"\n input -> ${testcase.inputFile}\n answer -> ${testcase.answerFile}`
+          );
           await notify({
             verdict: Verdict.TestCaseError,
             message: `Can not find testcase "${testcaseId}"`

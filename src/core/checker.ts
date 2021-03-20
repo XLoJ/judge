@@ -1,16 +1,15 @@
-import { CHK_PATH, LangConfig } from '../configs';
 import { Verdict, JudgeVerdict } from '../verdict';
 
 import { Result } from './result';
 import { Submission } from './submission';
-import { JudgeError } from './error';
+import { JudgeError } from '../error';
 import { SubmissionType } from './type';
 
 export class Checker extends Submission {
-  constructor(id: string, lang: string) {
+  constructor(name: string, basePath: string, lang: string) {
     super(lang, SubmissionType.CHK, {
-      file: id + '.' + LangConfig[lang].compiledExtension,
-      dir: CHK_PATH
+      file: name,
+      dir: basePath
     });
   }
 

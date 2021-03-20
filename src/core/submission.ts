@@ -2,30 +2,32 @@ import * as path from 'path';
 import { promises } from 'fs';
 
 import {
-  SUB_PATH,
-  LangConfig,
   COMPILER_GROUP_ID,
   COMPILER_USER_ID,
-  RUN_USER_ID,
-  RUN_GROUP_ID,
-  OUTPUT_LIMIT,
   ENV,
-  NSJAIL_PATH
+  getLangConfig,
+  NSJAIL_PATH,
+  OUTPUT_LIMIT,
+  RUN_GROUP_ID,
+  RUN_USER_ID,
+  SUB_PATH
 } from '../configs';
-import { randomString, makeTempDir, exec, isDef, rimraf } from '../utils';
+import { exec, isDef, makeTempDir, randomString, rimraf } from '../utils';
 import { Verdict } from '../verdict';
 
-import { SubmissionType, ISubmissionRunParam, IFileBinding } from './type';
-import { TestCaseError, SystemError, CompileError } from './error';
+import { IFileBinding, ISubmissionRunParam, SubmissionType } from './type';
+import { CompileError, SystemError, TestCaseError } from '../error';
 import { usageToResult } from './result';
+import { ILangConfig } from '../configs/lang';
 
-const envArgs: string[] = [];
-for (const env of ENV) {
-  envArgs.push('-E', env);
-}
+const envArgs = ENV.reduce((args: string[], env: string) => {
+  args.push('-E', env);
+  return args;
+}, []);
 
 export class Submission {
   lang: string;
+  langConfig: ILangConfig;
   type: SubmissionType;
   execute: {
     file: string;
@@ -40,166 +42,31 @@ export class Submission {
     options?: { file: string; dir: string }
   ) {
     this.lang = lang;
+    this.langConfig = getLangConfig(lang);
     this.type = type;
 
     const file = isDef(options) ? options.file : undefined;
     const dir = isDef(options) ? options.dir : undefined;
 
-    const fileName = file
+    const fileName = isDef(file)
       ? file
-      : randomString() + '.' + LangConfig[lang].compiledExtension;
-    const langConfig = LangConfig[lang];
+      : randomString() + '.' + this.langConfig.compiledExtension;
 
     this.execute = {
       file: fileName,
-      dir: dir ? dir : SUB_PATH,
-      command: langConfig.execute.command.replace(
+      dir: isDef(dir) ? dir : SUB_PATH,
+      command: this.langConfig.execute.command.replace(
         '${executableFile}',
         fileName
       ),
-      args: langConfig.execute.args.map((s) =>
-        String(s).replace('${executableFile}', fileName)
+      args: this.langConfig.execute.args.map((str) =>
+        String(str).replace('${executableFile}', fileName)
       )
     };
   }
 
   get fullFilePath() {
     return path.join(this.execute.dir, this.execute.file);
-  }
-
-  clear() {
-    return promises.unlink(this.fullFilePath);
-  }
-
-  async compile(code: string, maxTime = 16) {
-    const langConfig = LangConfig[this.lang];
-
-    const compileDir = await makeTempDir();
-    const outFile = path.join(compileDir, 'compile');
-    const errorFile = path.join(compileDir, 'compile.err');
-
-    await Promise.all([
-      promises.writeFile(
-        path.join(compileDir, langConfig.sourceFileName),
-        code
-      ),
-      promises.writeFile(outFile, ''),
-      promises.writeFile(errorFile, '')
-    ]);
-
-    const compileConfigs = langConfig.compile;
-    const compileSteps =
-      compileConfigs instanceof Array ? compileConfigs : [compileConfigs];
-
-    try {
-      for (const { command, args, out = 'compile.out' } of compileSteps) {
-        const result = await this.run({
-          workDir: compileDir,
-          executeCommand: command,
-          executeArgs: args.map((s) => {
-            if (s === '${sourceFile}') {
-              return langConfig.sourceFileName;
-            } else if (s === '${compiledFile}') {
-              return out;
-            }
-            return s;
-          }),
-          trusted: true,
-          maxTime,
-          maxMemory: 1024,
-          stdoutFile: outFile,
-          stderrFile: errorFile
-        });
-
-        if (result.verdict !== Verdict.Accepted) {
-          const errorMsg = await promises.readFile(errorFile, 'utf8');
-          if (errorMsg !== '') {
-            throw new CompileError(errorMsg);
-          } else if (result.verdict === Verdict.TimeLimitExceeded) {
-            throw new CompileError('Time limit exceeded when compiling');
-          } else if (result.verdict === Verdict.MemoryLimitExceeded) {
-            throw new CompileError('Memory limit exceeded when compiling');
-          } else {
-            throw new CompileError(
-              'Something is wrong, but, em, nothing is reported'
-            );
-          }
-        }
-      }
-
-      const executeFilePath = this.fullFilePath;
-      await promises.copyFile(
-        path.join(compileDir, 'compile.out'),
-        executeFilePath
-      );
-      await promises.chmod(executeFilePath, 0o0775);
-    } catch (err) {
-      throw err;
-    } finally {
-      await rimraf(compileDir);
-    }
-  }
-
-  async run({
-    workDir,
-    fileBindings = [],
-    trusted = false,
-    executeCommand = this.execute.command,
-    executeArgs = this.execute.args,
-    maxTime,
-    maxMemory,
-    stdinFile = undefined,
-    stdoutFile = undefined,
-    stderrFile = undefined
-  }: ISubmissionRunParam) {
-    const [rootDir, infoDir] = await Submission.prepareWorkDir();
-
-    try {
-      const [stdin, stdout, stderr] = await Submission.openRedirect(
-        stdinFile,
-        stdoutFile,
-        stderrFile
-      );
-
-      try {
-        await exec(
-          NSJAIL_PATH,
-          [
-            ...Submission.buildNsjailArgs(
-              workDir,
-              rootDir,
-              infoDir,
-              trusted,
-              fileBindings,
-              maxTime,
-              maxMemory
-            ),
-            executeCommand,
-            ...executeArgs
-          ],
-          {
-            stdio: [stdin, stdout, stderr],
-            uid: 0,
-            gid: 0
-          }
-        );
-
-        await Submission.closeRedirect(stdin, stdout, stderr);
-
-        return await usageToResult(infoDir, maxTime, maxMemory, maxTime * 2);
-      } catch (err) {
-        // TODO: Logger here
-        if (isDef(err)) {
-          throw new SystemError(err.message);
-        } else {
-          throw new SystemError('Unknown System Error');
-        }
-      }
-    } catch (err) {
-      throw err;
-    } finally {
-      await Submission.clearWorkDir(rootDir, infoDir);
-    }
   }
 
   private static buildNsjailArgs(
@@ -331,5 +198,138 @@ export class Submission {
       closeTasks.push(stderr.close());
     }
     return Promise.all(closeTasks);
+  }
+
+  clear() {
+    return promises.unlink(this.fullFilePath);
+  }
+
+  async compile(code: string, maxTime = 16) {
+    const compileDir = await makeTempDir();
+    const outFile = path.join(compileDir, 'compile');
+    const errorFile = path.join(compileDir, 'compile.err');
+
+    await Promise.all([
+      promises.writeFile(
+        path.join(compileDir, this.langConfig.sourceFileName),
+        code
+      ),
+      promises.writeFile(outFile, ''),
+      promises.writeFile(errorFile, '')
+    ]);
+
+    const compileConfigs = this.langConfig.compile;
+    const compileSteps =
+      compileConfigs instanceof Array ? compileConfigs : [compileConfigs];
+
+    try {
+      for (const { command, args, out = 'compile.out' } of compileSteps) {
+        const result = await this.run({
+          workDir: compileDir,
+          executeCommand: command,
+          executeArgs: args.map((str) => {
+            if (str === '${sourceFile}') {
+              return this.langConfig.sourceFileName;
+            } else if (str === '${compiledFile}') {
+              return out;
+            }
+            return str;
+          }),
+          trusted: true,
+          maxTime,
+          maxMemory: 1024,
+          stdoutFile: outFile,
+          stderrFile: errorFile
+        });
+
+        if (result.verdict !== Verdict.Accepted) {
+          const errorMsg = await promises.readFile(errorFile, 'utf8');
+          if (errorMsg !== '') {
+            throw new CompileError(errorMsg);
+          } else if (result.verdict === Verdict.TimeLimitExceeded) {
+            throw new CompileError('Time limit exceeded when compiling');
+          } else if (result.verdict === Verdict.MemoryLimitExceeded) {
+            throw new CompileError('Memory limit exceeded when compiling');
+          } else {
+            throw new CompileError(
+              'Something is wrong, but nothing is reported'
+            );
+          }
+        }
+      }
+
+      const executeFilePath = this.fullFilePath;
+      await promises.copyFile(
+        path.join(compileDir, 'compile.out'),
+        executeFilePath
+      );
+      await promises.chmod(executeFilePath, 0o0775);
+    } catch (err) {
+      throw err;
+    } finally {
+      await rimraf(compileDir);
+    }
+  }
+
+  async run({
+    workDir,
+    fileBindings = [],
+    trusted = false,
+    executeCommand = this.execute.command,
+    executeArgs = this.execute.args,
+    maxTime,
+    maxMemory,
+    stdinFile = undefined,
+    stdoutFile = undefined,
+    stderrFile = undefined
+  }: ISubmissionRunParam) {
+    const [rootDir, infoDir] = await Submission.prepareWorkDir();
+
+    try {
+      const [stdin, stdout, stderr] = await Submission.openRedirect(
+        stdinFile,
+        stdoutFile,
+        stderrFile
+      );
+
+      try {
+        await exec(
+          NSJAIL_PATH,
+          [
+            ...Submission.buildNsjailArgs(
+              workDir,
+              rootDir,
+              infoDir,
+              trusted,
+              fileBindings,
+              maxTime,
+              maxMemory
+            ),
+            executeCommand,
+            ...executeArgs
+          ],
+          {
+            stdio: [stdin, stdout, stderr],
+            uid: 0,
+            gid: 0
+          }
+        );
+
+        await Submission.closeRedirect(stdin, stdout, stderr);
+
+        return await usageToResult(infoDir, maxTime, maxMemory, maxTime * 2);
+      } catch (err) {
+        // TODO: Logger here
+        if (isDef(err)) {
+          throw new SystemError(err.message);
+        } else {
+          throw new SystemError('Unknown System Error');
+        }
+      }
+    } catch (err) {
+      throw err;
+    } finally {
+      await Submission.clearWorkDir(rootDir, infoDir);
+    }
   }
 }

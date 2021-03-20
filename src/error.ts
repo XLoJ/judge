@@ -1,4 +1,4 @@
-import { Verdict } from '../verdict';
+import { Verdict } from './verdict';
 
 export class CompileError extends Error {
   readonly verdict: Verdict;

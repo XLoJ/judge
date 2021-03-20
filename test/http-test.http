@@ -1,0 +1,38 @@
+GET http://localhost:3000/
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+POST http://localhost:3000/judge
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{
+  "id": "test",
+  "maxTime": 2,
+  "maxMemory": 128,
+  "problem": {
+    "pid": 1,
+    "name": "aplusb",
+    "checker": {
+      "name": "chk",
+      "version": "1",
+      "lang": "cpp"
+    }
+  },
+  "casesVersion": 1,
+  "cases": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5"
+  ],
+  "lang": "cpp",
+  "code": "I2luY2x1ZGUgPGlvc3RyZWFtPgp1c2luZyBuYW1lc3BhY2Ugc3RkOwoKaW50IG1haW4gKCkgewogIGludCBhID0gMSwgYiA9IDE7CiAgY2luID4+IGEgPj4gYjsKICBjb3V0IDw8IGEgKyBiOwogIHJldHVybiAwOwp9"
+}
+
+###
+

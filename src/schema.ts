@@ -1,7 +1,12 @@
 import { FastifyInstance } from 'fastify';
-import { JudgeSubmissionSchema, SubmissionInfoSchema } from './judge/type';
+import {
+  JudgeSubmissionSchema,
+  CodeInfoSchema,
+  JudgeProblemInfoSchema
+} from './judge/type';
 
 export function registerSchema(app: FastifyInstance) {
-  app.addSchema(SubmissionInfoSchema);
+  app.addSchema(CodeInfoSchema);
+  app.addSchema(JudgeProblemInfoSchema);
   app.addSchema(JudgeSubmissionSchema);
 }
