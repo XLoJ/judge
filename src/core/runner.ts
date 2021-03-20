@@ -17,6 +17,9 @@ import { Result, ResultWithReport } from './result';
 import { Checker } from './checker';
 import { TestCase } from './testcase';
 import { JudgeError } from '../error';
+import { getLogger } from '../logger';
+
+const logger = getLogger();
 
 export class Runner implements IRunner {
   submission: Submission;
@@ -146,6 +149,7 @@ export class Runner implements IRunner {
       // TODO: handle judge error message
       if (err instanceof JudgeError) {
         err.message = await readFileHead(chkOut);
+        logger.error(err.message);
       }
       throw err;
     } finally {
