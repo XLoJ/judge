@@ -6,8 +6,8 @@
   ],
   "rootDir": "src",
   "testMatch": [
-    "**/core/**/runner.spec.ts",
-    "**/core/**/submission.spec.ts"
+    "**/core/test/runner.spec.ts",
+    "**/core/test/submission.spec.ts"
   ],
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"

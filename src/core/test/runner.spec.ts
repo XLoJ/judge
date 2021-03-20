@@ -5,6 +5,8 @@ import { Verdict } from '../../verdict';
 import { Submission } from '../submission';
 import { Checker } from '../checker';
 import { Runner } from '../runner';
+import { TestCase } from '../testcase';
+import { Problem } from '../problem';
 
 jest.setTimeout(10 * 1000);
 
@@ -19,11 +21,14 @@ describe('Test aplusb', () => {
   let submission: Submission;
   let checker: Checker;
   let runner: Runner;
+  let testcase: TestCase;
 
   beforeAll(async () => {
     submission = new Submission('cpp');
-    checker = new Checker('int_chk', 'cpp');
+    const problem = new Problem(1, 'aplusb');
+    checker = problem.checker(1, 'chk', 'cpp');
     runner = new Runner(submission, checker, 1, 64);
+    testcase = problem.testcase(1, '1');
 
     const checkerCode = readCode('chk.cpp');
     await checker.compile(checkerCode);
@@ -40,7 +45,7 @@ describe('Test aplusb', () => {
   test('Run ac', async () => {
     await submission.compile(readCode('ac.cpp'));
 
-    const result = await runner.run('aplusb1', { returnReport: true });
+    const result = await runner.run(testcase, { returnReport: true });
 
     expect(result.verdict).toBe(Verdict.Accepted);
     if ('stdout' in result) {
@@ -54,7 +59,7 @@ describe('Test aplusb', () => {
   test('Run wa', async () => {
     await submission.compile(readCode('wa.cpp'));
 
-    const result = await runner.run('aplusb1', { returnReport: true });
+    const result = await runner.run(testcase, { returnReport: true });
 
     expect(result.verdict).toBe(Verdict.WrongAnswer);
   });
@@ -62,7 +67,7 @@ describe('Test aplusb', () => {
   test('Run RE', async () => {
     await submission.compile(readCode('re.cpp'));
 
-    const result = await runner.run('aplusb1', { returnReport: true });
+    const result = await runner.run(testcase, { returnReport: true });
 
     expect(result.verdict).toBe(Verdict.RuntimeError);
   });
@@ -70,7 +75,7 @@ describe('Test aplusb', () => {
   test('Run MLE', async () => {
     await submission.compile(readCode('mle.cpp'));
 
-    const result = await runner.run('aplusb1', { returnReport: true });
+    const result = await runner.run(testcase, { returnReport: true });
 
     expect(result.verdict).toBe(Verdict.MemoryLimitExceeded);
   });
@@ -78,7 +83,7 @@ describe('Test aplusb', () => {
   test('Run TLE', async () => {
     await submission.compile(readCode('tle.cpp'));
 
-    const result = await runner.run('aplusb1', { returnReport: true });
+    const result = await runner.run(testcase, { returnReport: true });
 
     // Some environments may not support getting user time, and it will return IdlenessLimitExceeded.
     expect(
