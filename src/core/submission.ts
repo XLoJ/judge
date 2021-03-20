@@ -324,8 +324,10 @@ export class Submission {
       } catch (err) {
         // TODO: Logger here
         if (isDef(err)) {
+          logger.error(`Error: ${err.message}`);
           throw new SystemError(err.message);
         } else {
+          logger.error(`Error: unknown`);
           throw new SystemError('Unknown System Error');
         }
       }

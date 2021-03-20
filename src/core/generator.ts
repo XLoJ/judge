@@ -1,15 +1,11 @@
-// import { GEN_PATH, LangConfig } from '../configs';
-
 import { Submission } from './submission';
 import { SubmissionType } from './type';
 
 export class Generator extends Submission {
-  // constructor(id: string, lang: string) {
-  //   super(lang, SubmissionType.GEN, {
-  //     file: id + '.' + LangConfig[lang].compiledExtension,
-  //     dir: GEN_PATH
-  //   });
-  // }
-
-  async clear(): Promise<void> {}
+  constructor(name: string, basePath: string, lang: string) {
+    super(lang, SubmissionType.GEN, {
+      file: name,
+      dir: basePath
+    });
+  }
 }

@@ -38,12 +38,11 @@ export class TestCase {
   }
 
   async writeIn(content: string): Promise<void> {
-    try {
-      await promises.mkdir(this.inputFile);
-    } catch (err) {
-    } finally {
-      await promises.writeFile(this.inputFile, content, 'utf8');
-    }
+    await promises.writeFile(this.inputFile, content, 'utf8');
+  }
+
+  private async writeAns(): Promise<void> {
+    await promises.writeFile(this.answerFile, '', 'utf8');
   }
 
   async genIn(generator: Generator, args: string[] = []): Promise<Result> {
@@ -135,14 +134,5 @@ export class TestCase {
       await rimraf(this.inputFile);
       await rimraf(this.answerFile);
     } catch (err) {}
-  }
-
-  private async writeAns(): Promise<void> {
-    try {
-      await promises.mkdir(this.answerFile);
-    } catch (err) {
-    } finally {
-      await promises.writeFile(this.answerFile, '', 'utf8');
-    }
   }
 }

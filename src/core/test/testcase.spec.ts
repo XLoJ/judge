@@ -1,10 +1,9 @@
 import { readFileSync } from 'fs';
 import * as path from 'path';
+
 import { randomString, rimraf } from '../../utils';
-import { Generator } from '../generator';
-import { TestCase } from '../testcase';
-import { GEN_PATH } from '../../configs';
 import { Verdict } from '../../verdict';
+import { Problem } from '../problem';
 
 function readCode(file: string) {
   return readFileSync(
@@ -13,17 +12,19 @@ function readCode(file: string) {
   );
 }
 
-jest.setTimeout(20 * 1000);
+jest.setTimeout(30 * 1000);
 
 describe('Testcase', () => {
-  const generatorIn = new Generator('gen', 'cpp');
-  const generatorAns = new Generator('std', 'cpp');
-  const testcase = new TestCase(randomString(8));
+  const problem = new Problem(2, 'aplusb');
+  const generatorIn = problem.generator('gen', 'cpp');
+  const generatorAns = problem.generator('std', 'cpp');
+  const testcase = problem.testcase(1, randomString(8));
 
   beforeAll(async () => {
-    await rimraf(path.join(GEN_PATH, '*'));
+    await problem.ensureTestcasesBasePath(1);
+
     await generatorIn.compile(readCode('gen.cpp'));
-    return generatorAns.compile(readCode('ac.cpp'));
+    await generatorAns.compile(readCode('ac.cpp'));
   });
 
   test('Gen', async () => {
@@ -44,6 +45,6 @@ describe('Testcase', () => {
   });
 
   afterAll(async () => {
-    await testcase.clear();
+    await rimraf(problem.localBasePath);
   });
 });

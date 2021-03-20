@@ -4,6 +4,10 @@ import { getLangConfig, PROBLEM_PATH } from '../configs';
 import { TestCase } from './testcase';
 import { Checker } from './checker';
 import { Validator } from './validtor';
+import { Generator } from './generator';
+import { getLogger } from '../logger';
+
+const logger = getLogger();
 
 export class Problem {
   pid: number;
@@ -48,16 +52,27 @@ export class Problem {
     return new Validator(filename, this.localBasePath, lang);
   }
 
+  generator(name: string, lang: string): Generator {
+    const filename = `${name}.${getLangConfig(lang).compiledExtension}`;
+    return new Generator(filename, this.localBasePath, lang);
+  }
+
   async ensureProblem() {
     try {
-      await fs.promises.mkdir(path.join(PROBLEM_PATH, this.basePath));
-    } catch (err) {}
+      await fs.promises.mkdir(this.localBasePath);
+    } catch (err) {
+      logger.error(err.message);
+    }
   }
 
   async ensureTestcasesBasePath(version: number) {
     await this.ensureProblem();
     try {
-      await fs.promises.mkdir(this.localTestcasesBasePath(version));
-    } catch (err) {}
+      await fs.promises.mkdir(this.localTestcasesBasePath(version), {
+        recursive: true
+      });
+    } catch (err) {
+      logger.error(err.message);
+    }
   }
 }
