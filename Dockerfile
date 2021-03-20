@@ -23,7 +23,7 @@ RUN git submodule update --init --recursive \
 RUN rm -rf node_modules \
     && yarn install --production=false \
     && yarn prebuild && yarn build \ 
-    && mkdir -p /judge/run/submission /judge/run/temp /judge/run/data \
+    && mkdir -p /judge/run/submission /judge/run/temp /judge/run/data /judge/run/problems \
        /judge/run/checker /judge/run/interactor /judge/run/generator /judge/run/validator \
     && useradd -r compiler \
     && chmod +x run.sh \

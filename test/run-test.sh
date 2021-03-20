@@ -11,7 +11,7 @@ chgrp root -R /sys/fs/cgroup/memory/NSJAIL /sys/fs/cgroup/cpu/NSJAIL /sys/fs/cgr
 chown compiler -R /sys/fs/cgroup/memory/NSJAIL /sys/fs/cgroup/cpu/NSJAIL /sys/fs/cgroup/pids/NSJAIL
 chgrp compiler -R /sys/fs/cgroup/memory/NSJAIL /sys/fs/cgroup/cpu/NSJAIL /sys/fs/cgroup/pids/NSJAIL
 
-chown compiler:compiler ./run/temp ./run/submission
+chown compiler:compiler ./run/temp ./run/submission ./run/problems
 chown compiler:compiler ./run/checker ./run/interactor ./run/generator ./run/validator
 
 yarn jest --config test-core.config.json
