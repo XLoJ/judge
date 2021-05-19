@@ -1,7 +1,7 @@
 export enum Verdict {
   Compiling = -4,
   Waiting,
-  Judging,
+  Finished,
   WrongAnswer,
   Accepted = 0,
   TimeLimitExceeded,

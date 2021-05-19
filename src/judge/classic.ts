@@ -107,6 +107,8 @@ export class ClassicJudge {
       }
     }
 
+    notify({ verdict: Verdict.Finished });
+
     await runner.clear();
   }
 }

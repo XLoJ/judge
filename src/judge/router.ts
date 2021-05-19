@@ -48,6 +48,7 @@ export function registerJudgeRouter(app: FastifyInstance) {
         const response = {
           from: app.config.SERVER_NAME,
           timestamp: new Date().toISOString(),
+          id: body.id,
           ...msg
         };
         const buffer = Buffer.from(JSON.stringify(response));
