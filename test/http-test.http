@@ -1,10 +1,10 @@
-GET http://localhost:3000/
+GET http://127.0.0.1:30001
 Accept: */*
 Cache-Control: no-cache
 
 ###
 
-POST http://localhost:3000/judge
+POST http://localhost:30001/judge
 Accept: */*
 Cache-Control: no-cache
 Content-Type: application/json
@@ -17,8 +17,8 @@ Content-Type: application/json
     "pid": 1,
     "name": "aplusb",
     "checker": {
-      "name": "chk",
-      "version": "1",
+      "name": "checker",
+      "version": "2",
       "lang": "cpp"
     }
   },
@@ -28,7 +28,8 @@ Content-Type: application/json
     "2",
     "3",
     "4",
-    "5"
+    "5",
+    "aplusb1"
   ],
   "lang": "cpp",
   "code": "I2luY2x1ZGUgPGlvc3RyZWFtPgp1c2luZyBuYW1lc3BhY2Ugc3RkOwoKaW50IG1haW4gKCkgewogIGludCBhID0gMSwgYiA9IDE7CiAgY2luID4+IGEgPj4gYjsKICBjb3V0IDw8IGEgKyBiOwogIHJldHVybiAwOwp9"

@@ -12,6 +12,11 @@ export function initMinio(instance: Client) {
 }
 
 export function downloadFile(minioPath: string) {
+  if (client === undefined) {
+    const msg = 'Miss Min IO connect config';
+    logger.error(msg);
+    throw new Error(msg);
+  }
   return new Promise<string>((res, rej) => {
     client!.getObject(BucketName, minioPath, (err, stream) => {
       if (err) {
