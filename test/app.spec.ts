@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { build } from '../src';
+import { build } from '../src/app';
 import * as assert from 'assert';
 
 describe('Test app', () => {
