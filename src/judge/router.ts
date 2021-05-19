@@ -34,31 +34,33 @@ export function registerJudgeRouter(app: FastifyInstance) {
     }
   );
 
-  app.amqpChannel.consume(
-    app.config.JUDGE_QUEUE,
-    async (msg) => {
-      if (!isDef(msg)) return;
+  if (isDef(app.amqpChannel)) {
+    app.amqpChannel.consume(
+      app.config.JUDGE_QUEUE,
+      async (msg) => {
+        if (!isDef(msg)) return;
 
-      const body = JSON.parse(msg.content.toString());
+        const body = JSON.parse(msg.content.toString());
 
-      app.log.info(`Handle Rabbit MQ message: Judge "${body.id}"`);
+        app.log.info(`Handle Rabbit MQ message: Judge "${body.id}"`);
 
-      const classicJudge = new ClassicJudge();
-      await classicJudge.judge((msg) => {
-        const response = {
-          from: app.config.SERVER_NAME,
-          timestamp: new Date().toISOString(),
-          id: body.id,
-          ...msg
-        };
-        const buffer = Buffer.from(JSON.stringify(response));
-        app.amqpChannel.sendToQueue(app.config.MSG_QUEUE, buffer);
-      }, body);
+        const classicJudge = new ClassicJudge();
+        await classicJudge.judge((msg) => {
+          const response = {
+            from: app.config.SERVER_NAME,
+            timestamp: new Date().toISOString(),
+            id: body.id,
+            ...msg
+          };
+          const buffer = Buffer.from(JSON.stringify(response));
+          app.amqpChannel.sendToQueue(app.config.MSG_QUEUE, buffer);
+        }, body);
 
-      app.amqpChannel.ack(msg);
-    },
-    {
-      noAck: false
-    }
-  );
+        app.amqpChannel.ack(msg);
+      },
+      {
+        noAck: false
+      }
+    );
+  }
 }
