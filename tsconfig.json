@@ -17,5 +17,5 @@
     "baseUrl": "./",
     "incremental": true
   },
-  "exclude": ["node_modules", "dist", "src/core/test"]
+  "exclude": ["node_modules", "test", "dist", "src/core/test"]
 }

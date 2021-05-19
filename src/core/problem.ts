@@ -6,6 +6,9 @@ import { Checker } from './checker';
 import { Validator } from './validtor';
 import { Generator } from './generator';
 import { getLogger } from '../logger';
+import { constants, promises } from 'fs';
+import { downloadFile } from '../minio';
+import { b64decode } from '../utils';
 
 const logger = getLogger();
 
@@ -26,14 +29,6 @@ export class Problem {
 
   get minioBasePath() {
     return this.basePath;
-  }
-
-  private minioTestcasesBasePath(version: number) {
-    return path.join(this.minioBasePath, 'testcases', String(version));
-  }
-
-  private localTestcasesBasePath(version: number) {
-    return path.join(this.localBasePath, 'testcases', String(version));
   }
 
   testcase(version: number, name: string): TestCase {
@@ -65,6 +60,26 @@ export class Problem {
     }
   }
 
+  async ensureChecker({
+    name,
+    lang,
+    version
+  }: {
+    name: string;
+    lang: string;
+    version: number;
+  }) {
+    const checker = this.checker(version, name, lang);
+    try {
+      await promises.access(checker.fullFilePath, constants.R_OK);
+    } catch (err) {
+      const filename = `${version}-${name}`;
+      const minioPath = path.join(this.minioBasePath, filename);
+      const content = JSON.parse(await downloadFile(minioPath));
+      await checker.compile(b64decode(content.body));
+    }
+  }
+
   async ensureTestcasesBasePath(version: number) {
     await this.ensureProblem();
     try {
@@ -74,5 +89,13 @@ export class Problem {
     } catch (err) {
       logger.error(err.message);
     }
+  }
+
+  minioTestcasesBasePath(version: number) {
+    return path.join(this.minioBasePath, 'testcases', String(version));
+  }
+
+  localTestcasesBasePath(version: number) {
+    return path.join(this.localBasePath, 'testcases', String(version));
   }
 }

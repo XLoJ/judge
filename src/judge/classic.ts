@@ -47,6 +47,7 @@ export class ClassicJudge {
     }
 
     await problem.ensureTestcasesBasePath(casesVersion);
+    await problem.ensureChecker(problemInfo.checker);
 
     const checker = problem.checker(
       problemInfo.checker.version,
@@ -59,7 +60,7 @@ export class ClassicJudge {
       const testcase = problem.testcase(casesVersion, testcaseId);
 
       try {
-        await testcase.ensure(problem);
+        await testcase.ensure(problem.minioTestcasesBasePath(casesVersion));
 
         const result = await runner.run(testcase, { returnReport });
 

@@ -4,12 +4,14 @@ import hyperid from 'hyperid';
 import fastify from 'fastify';
 import fastifyEnv from 'fastify-env';
 import fastifyAmqp from 'fastify-amqp';
+import { Client } from 'minio';
 
 import { isDef } from './utils';
 import { getLogger } from './logger';
 import { registerSchema } from './schema';
 import { registerJudgeRouter } from './judge/router';
 import { registerPolygonRouter } from './polygon/router';
+import { initMinio } from './minio';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -25,6 +27,11 @@ declare module 'fastify' {
       RMQ_USER?: string;
       RMQ_PASS?: string;
       PREFETCH: number;
+
+      MINIO_HOST?: string;
+      MINIO_PORT?: number;
+      MINIO_ACCESS?: string;
+      MINIO_SECRET?: string;
     };
   }
 }
@@ -63,7 +70,11 @@ export async function build() {
         RMQ_PORT: { type: 'number' },
         RMQ_USER: { type: 'string' },
         RMQ_PASS: { type: 'string' },
-        PREFETCH: { type: 'number', default: 1 }
+        PREFETCH: { type: 'number', default: 1 },
+        MINIO_HOST: { type: 'string' },
+        MINIO_PORT: { type: 'number' },
+        MINIO_ACCESS: { type: 'string' },
+        MINIO_SECRET: { type: 'string' }
       }
     }
   });
@@ -88,6 +99,22 @@ export async function build() {
       app.log.error(err);
       process.exit(1);
     }
+  }
+
+  if (isDef(app.config.MINIO_HOST)) {
+    const client = new Client({
+      endPoint: app.config.MINIO_HOST,
+      port: app.config.MINIO_PORT,
+      useSSL: false,
+      accessKey: app.config.MINIO_ACCESS!,
+      secretKey: app.config.MINIO_SECRET!
+    });
+    initMinio(client);
+    app.log.info(
+      `Connect to Min IO at http://${app.config.MINIO_HOST}:${
+        app.config.MINIO_PORT ?? 9000
+      }`
+    );
   }
 
   await app.addHook(

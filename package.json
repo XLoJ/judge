@@ -26,6 +26,7 @@
     "fastify-swagger": "^3.5.0",
     "fluent-json-schema": "^2.0.3",
     "hyperid": "^2.1.0",
+    "minio": "^7.0.18",
     "pino": "^6.9.0",
     "pino-pretty": "^4.3.0",
     "rimraf": "^3.0.2",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@types/amqplib": "^0.5.17",
+    "@types/minio": "^7.0.7",
     "@types/pino": "^6.3.4",
     "@types/rimraf": "^3.0.0",
     "husky": "^4.3.7",

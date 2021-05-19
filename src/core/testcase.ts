@@ -8,6 +8,7 @@ import { getLogger } from '../logger';
 import { Result } from './result';
 import { Generator } from './generator';
 import { Problem } from './problem';
+import { downloadFile } from '../minio';
 
 const logger = getLogger();
 
@@ -24,16 +25,22 @@ export class TestCase {
     this.answerFile = path.join(basePath, `${name}.ans`);
   }
 
-  async ensure(problem: Problem) {
+  async ensure(minioPath: string) {
     try {
       await promises.access(this.inputFile, constants.R_OK);
     } catch (err) {
-      logger.info(`Fail to access ${this.inputFile}`);
+      logger.info(`Download ${this.inputFile}`);
+      const filepath = path.join(minioPath, `${this.name}.in`);
+      const body = await downloadFile(filepath);
+      await this.writeIn(body);
     }
     try {
       await promises.access(this.answerFile, constants.R_OK);
     } catch (err) {
-      logger.info(`Fail to access ${this.answerFile}`);
+      logger.info(`Download ${this.answerFile}`);
+      const filepath = path.join(minioPath, `${this.name}.ans`);
+      const body = await downloadFile(filepath);
+      await this.writeAns(body);
     }
   }
 
@@ -41,8 +48,8 @@ export class TestCase {
     await promises.writeFile(this.inputFile, content, 'utf8');
   }
 
-  private async writeAns(): Promise<void> {
-    await promises.writeFile(this.answerFile, '', 'utf8');
+  private async writeAns(content: string = ''): Promise<void> {
+    await promises.writeFile(this.answerFile, content, 'utf8');
   }
 
   async genIn(generator: Generator, args: string[] = []): Promise<Result> {
