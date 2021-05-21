@@ -18,8 +18,6 @@ export interface JudgeSubmissionDTO {
       name: string;
 
       lang: string;
-
-      version: number;
     };
   };
 
@@ -38,8 +36,7 @@ export interface JudgeSubmissionDTO {
 export const CodeInfoSchema = S.object()
   .id('CodeInfo')
   .prop('name', S.string().required())
-  .prop('lang', S.string().default('cpp'))
-  .prop('version', S.number().minimum(1).default(1));
+  .prop('lang', S.string().default('cpp'));
 
 export const JudgeProblemInfoSchema = S.object()
   .id('JudgeProblemInfo')

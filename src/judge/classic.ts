@@ -47,10 +47,12 @@ export class ClassicJudge {
     }
 
     await problem.ensureTestcasesBasePath(casesVersion);
-    await problem.ensureChecker(problemInfo.checker);
+    await problem.ensureChecker(
+      problemInfo.checker.name,
+      problemInfo.checker.lang
+    );
 
     const checker = problem.checker(
-      problemInfo.checker.version,
       problemInfo.checker.name,
       problemInfo.checker.lang
     );

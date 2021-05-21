@@ -16,8 +16,7 @@ Content-Type: application/json
   "problem": {
     "name": "1-aplusb",
     "checker": {
-      "name": "checker",
-      "version": "2",
+      "name": "10-checker-checker",
       "lang": "cpp"
     }
   },

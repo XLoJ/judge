@@ -1,12 +1,12 @@
 import * as path from 'path';
 import * as fs from 'fs';
+import { constants, promises } from 'fs';
 import { getLangConfig, PROBLEM_PATH } from '../configs';
 import { TestCase } from './testcase';
 import { Checker } from './checker';
 import { Validator } from './validtor';
 import { Generator } from './generator';
 import { getLogger } from '../logger';
-import { constants, promises } from 'fs';
 import { downloadFile } from '../minio';
 import { b64decode } from '../utils';
 
@@ -33,10 +33,8 @@ export class Problem {
     return new TestCase(name, this.localTestcasesBasePath(version));
   }
 
-  checker(version: number, name: string, lang: string): Checker {
-    const filename = `${version}-${name}.${
-      getLangConfig(lang).compiledExtension
-    }`;
+  checker(name: string, lang: string): Checker {
+    const filename = `${name}.${getLangConfig(lang).compiledExtension}`;
     return new Checker(filename, this.localBasePath, lang);
   }
 
@@ -58,21 +56,12 @@ export class Problem {
     }
   }
 
-  async ensureChecker({
-    name,
-    lang,
-    version
-  }: {
-    name: string;
-    lang: string;
-    version: number;
-  }) {
-    const checker = this.checker(version, name, lang);
+  async ensureChecker(name: string, lang: string) {
+    const checker = this.checker(name, lang);
     try {
       await promises.access(checker.fullFilePath, constants.R_OK);
     } catch (err) {
-      const filename = `${version}-${name}`;
-      const minioPath = path.join(this.minioBasePath, filename);
+      const minioPath = path.join(this.minioBasePath, name);
       const content = JSON.parse(await downloadFile(minioPath));
       await checker.compile(b64decode(content.body));
     }

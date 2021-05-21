@@ -26,7 +26,7 @@ describe('Test aplusb', () => {
   beforeAll(async () => {
     submission = new Submission('cpp');
     const problem = new Problem('1-aplusb');
-    checker = problem.checker(1, 'chk', 'cpp');
+    checker = problem.checker('chk', 'cpp');
     runner = new Runner(submission, checker, 1, 64);
     testcase = problem.testcase(1, '1');
 
