@@ -28,11 +28,13 @@ export type TestcaseConfig =
   | {
       type: 'file';
       filename: string;
+      example?: boolean;
     }
   | {
       type: 'generator';
       generator: number;
       args: string[];
+      example?: boolean;
     };
 
 export interface IBuildTask {
