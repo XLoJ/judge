@@ -2,6 +2,7 @@ export enum ActionType {
   START = 'start',
   DOWNLOAD = 'download',
   COMPILE = 'compile',
+  COMPILE_ERROR = 'compile_error',
   END = 'end',
   ERROR = 'error'
 }
@@ -9,6 +10,7 @@ export enum ActionType {
 type PolygonMessage = {
   action: ActionType;
   message?: string;
+  name?: string;
 };
 
 export type NotifyFn = (message: PolygonMessage) => Promise<void> | void;
