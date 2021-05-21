@@ -3,7 +3,8 @@ import { Message } from 'amqplib';
 
 import { isDef } from '../utils';
 
-import { IBuildTask } from './type';
+import { ActionType, IBuildTask, NotifyFn } from './type';
+import { build } from './build';
 
 export function registerPolygonRouter(app: FastifyInstance) {
   if (isDef(app.amqpChannel)) {
@@ -13,13 +14,17 @@ export function registerPolygonRouter(app: FastifyInstance) {
         if (!isDef(msg)) return;
 
         const body = JSON.parse(msg.content.toString()) as IBuildTask;
+        body.testcases = JSON.parse((body.testcases as unknown) as string);
 
         app.log.info(`Handle Rabbit MQ message: Polygon "${body.problem}"`);
 
-        const ack = () => app.amqpChannel.ack(msg);
-        const nack = () => app.amqpChannel.nack(msg);
-        const send = (msg: any) => {
+        // Current message index
+        let index = 0;
+        const send: NotifyFn = (msg) => {
           const response = {
+            index: ++index,
+            problem: body.problem,
+            version: body.version,
             from: app.config.SERVER_NAME,
             timestamp: new Date().toISOString(),
             ...msg
@@ -27,6 +32,19 @@ export function registerPolygonRouter(app: FastifyInstance) {
           const buffer = Buffer.from(JSON.stringify(response));
           app.amqpChannel.sendToQueue(app.config.POLYGON_MSG_QUEUE, buffer);
         };
+
+        try {
+          await build(body, send);
+        } catch (err) {
+          // send Error message
+          app.log.error(err);
+          send({
+            action: ActionType.ERROR,
+            message: err.message ?? 'Unknown Error'
+          });
+        }
+
+        app.amqpChannel.ack(msg);
       },
       {
         noAck: false

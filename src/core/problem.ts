@@ -67,6 +67,28 @@ export class Problem {
     }
   }
 
+  async ensureValidator(name: string, lang: string) {
+    const validator = this.validator(name, lang);
+    try {
+      await promises.access(validator.fullFilePath, constants.R_OK);
+    } catch (err) {
+      const minioPath = path.join(this.minioBasePath, name);
+      const content = JSON.parse(await downloadFile(minioPath));
+      await validator.compile(b64decode(content.body));
+    }
+  }
+
+  async ensureGenerator(name: string, lang: string) {
+    const generator = this.generator(name, lang);
+    try {
+      await promises.access(generator.fullFilePath, constants.R_OK);
+    } catch (err) {
+      const minioPath = path.join(this.minioBasePath, name);
+      const content = JSON.parse(await downloadFile(minioPath));
+      await generator.compile(b64decode(content.body));
+    }
+  }
+
   async ensureTestcasesBasePath(version: number) {
     await this.ensureProblem();
     try {
