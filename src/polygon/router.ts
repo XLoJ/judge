@@ -14,6 +14,8 @@ export function registerPolygonRouter(app: FastifyInstance) {
         if (!isDef(msg)) return;
 
         const body = JSON.parse(msg.content.toString()) as IBuildTask;
+        // Testcases is still raw string after JSON.parse
+        // Do parse again and skip type checker
         body.testcases = JSON.parse((body.testcases as unknown) as string);
 
         app.log.info(`Handle Rabbit MQ message: Polygon "${body.problem}"`);
