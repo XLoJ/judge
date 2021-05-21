@@ -25,6 +25,7 @@ declare module 'fastify' {
       JUDGE_QUEUE: string;
       POLYGON_QUEUE: string;
       MSG_QUEUE: string;
+      POLYGON_MSG_QUEUE: string;
 
       RMQ_HOST?: string;
       RMQ_PORT?: number;
@@ -73,6 +74,7 @@ export async function build() {
         JUDGE_QUEUE: { type: 'string', default: 'Judge' },
         POLYGON_QUEUE: { type: 'string', default: 'Polygon' },
         MSG_QUEUE: { type: 'string', default: 'JudgeMessage' },
+        POLYGON_MSG_QUEUE: { type: 'string', default: 'PolygonMessage' },
         RMQ_HOST: { type: 'string' },
         RMQ_PORT: { type: 'number' },
         RMQ_USER: { type: 'string' },
@@ -100,6 +102,7 @@ export async function build() {
       app.amqpChannel.assertQueue(app.config.JUDGE_QUEUE);
       app.amqpChannel.assertQueue(app.config.POLYGON_QUEUE);
       app.amqpChannel.assertQueue(app.config.MSG_QUEUE);
+      app.amqpChannel.assertQueue(app.config.POLYGON_MSG_QUEUE);
 
       app.log.info(
         `Connect to Rabbit MQ at amqp://${app.config.RMQ_HOST}:${

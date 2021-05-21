@@ -14,8 +14,7 @@ Content-Type: application/json
   "maxTime": 2,
   "maxMemory": 128,
   "problem": {
-    "pid": 1,
-    "name": "aplusb",
+    "name": "1-aplusb",
     "checker": {
       "name": "checker",
       "version": "2",

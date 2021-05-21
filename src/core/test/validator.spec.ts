@@ -16,7 +16,7 @@ function readCode(file: string) {
 jest.setTimeout(20 * 1000);
 
 describe('Test Val', () => {
-  const problem = new Problem(1, 'aplusb');
+  const problem = new Problem('1-aplusb');
   const validator = problem.validator('val', 'cpp');
 
   beforeAll(async () => {

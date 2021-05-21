@@ -13,14 +13,12 @@ import { b64decode } from '../utils';
 const logger = getLogger();
 
 export class Problem {
-  pid: number;
   name: string;
   basePath: string;
 
-  constructor(pid: number, name: string, basePath?: string) {
-    this.pid = pid;
+  constructor(name: string, basePath?: string) {
     this.name = name;
-    this.basePath = basePath ?? `${pid}-${name}`;
+    this.basePath = basePath ?? `${name}`;
   }
 
   get localBasePath() {

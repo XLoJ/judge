@@ -33,7 +33,7 @@ export class ClassicJudge {
   ): Promise<void> {
     const code = b64decode(b64Code);
     const submission = new Submission(lang);
-    const problem = new Problem(problemInfo.pid, problemInfo.name);
+    const problem = new Problem(problemInfo.name);
 
     // Compile
     await notify({ verdict: Verdict.Compiling });

@@ -12,8 +12,6 @@ export interface JudgeSubmissionDTO {
   maxMemory: number; // mega bytes
 
   problem: {
-    pid: number;
-
     name: string;
 
     checker: {
@@ -45,7 +43,6 @@ export const CodeInfoSchema = S.object()
 
 export const JudgeProblemInfoSchema = S.object()
   .id('JudgeProblemInfo')
-  .prop('pid', S.number().required())
   .prop('name', S.string().required())
   .prop('checker', S.ref('CodeInfo'));
 

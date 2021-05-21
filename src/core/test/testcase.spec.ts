@@ -15,7 +15,7 @@ function readCode(file: string) {
 jest.setTimeout(30 * 1000);
 
 describe('Testcase', () => {
-  const problem = new Problem(2, 'aplusb');
+  const problem = new Problem('2-aplusb');
   const generatorIn = problem.generator('gen', 'cpp');
   const generatorAns = problem.generator('std', 'cpp');
   const testcase = problem.testcase(1, randomString(8));
