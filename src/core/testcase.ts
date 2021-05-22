@@ -4,10 +4,10 @@ import * as path from 'path';
 import { makeTempDir, rimraf } from '../utils';
 import { Verdict } from '../verdict';
 import { getLogger } from '../logger';
+import { downloadFile, uploadFile } from '../minio';
 
 import { Result } from './result';
 import { Generator } from './generator';
-import { downloadFile, uploadFile } from '../minio';
 
 const logger = getLogger();
 
