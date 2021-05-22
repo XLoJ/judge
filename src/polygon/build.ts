@@ -66,6 +66,16 @@ export async function build(buildTask: IBuildTask, fn: NotifyFn) {
     }
   }
 
+  const validator = problem.validator(
+    buildTask.validator.name,
+    buildTask.validator.language
+  );
+
+  const checker = problem.generator(
+    buildTask.solution.name,
+    buildTask.solution.language
+  );
+
   for (let i = 0; i < buildTask.testcases.length; i++) {
     const testcaseConfig = buildTask.testcases[i];
     const sendTestcaseConfig = { index: i + 1, ...testcaseConfig };
@@ -88,7 +98,11 @@ export async function build(buildTask: IBuildTask, fn: NotifyFn) {
         (generator) => generator.id === testcaseConfig.generator
       );
       if (isDef(findGenerator)) {
-        fn({ action: ActionType.GEN_IN, testcase: sendTestcaseConfig });
+        fn({
+          action: ActionType.GEN_IN,
+          testcase: sendTestcaseConfig,
+          code: findGenerator
+        });
 
         const generator = problem.generator(
           findGenerator.fullname,
@@ -101,7 +115,7 @@ export async function build(buildTask: IBuildTask, fn: NotifyFn) {
           logger.error(result);
           fn({
             action: ActionType.ERROR,
-            message: result.message,
+            message: JSON.stringify(result),
             testcase: sendTestcaseConfig
           });
           return;
@@ -120,8 +134,34 @@ export async function build(buildTask: IBuildTask, fn: NotifyFn) {
     }
 
     // Validate
+    {
+      fn({
+        action: ActionType.VALIDATE,
+        testcase: sendTestcaseConfig,
+        code: buildTask.validator
+      });
+
+      const result = await validator.validate(testcase);
+
+      if (result.verdict !== Verdict.Accepted) {
+        logger.error(result);
+        fn({
+          action: ActionType.ERROR,
+          message: JSON.stringify(result),
+          testcase: sendTestcaseConfig
+        });
+        return;
+      }
+    }
 
     // Generate ans
+    {
+      fn({
+        action: ActionType.GEN_ANS,
+        testcase: sendTestcaseConfig,
+        code: buildTask.solution
+      });
+    }
 
     // Upload in and ans
   }

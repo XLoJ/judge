@@ -20,6 +20,8 @@ describe('Test Val', () => {
   const validator = problem.validator('val', 'cpp');
 
   beforeAll(async () => {
+    await problem.ensureProblem();
+    await problem.ensureTestcasesBasePath(1);
     await rimraf(validator.fullFilePath);
     await validator.compile(readCode('val.cpp'));
   });
