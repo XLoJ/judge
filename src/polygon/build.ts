@@ -68,11 +68,12 @@ export async function build(buildTask: IBuildTask, fn: NotifyFn) {
 
   for (let i = 0; i < buildTask.testcases.length; i++) {
     const testcaseConfig = buildTask.testcases[i];
+    const sendTestcaseConfig = { index: i + 1, ...testcaseConfig };
     const testcase = problem.testcase(buildTask.version, String(i + 1));
 
     // Download static file testcase, or generate input
     if (testcaseConfig.type === 'file') {
-      fn({ action: ActionType.DOWNLOAD, name: testcaseConfig.filename });
+      fn({ action: ActionType.DOWNLOAD, testcase: sendTestcaseConfig });
 
       // Use static folder here
       const fullFilename = path.join(
@@ -87,7 +88,7 @@ export async function build(buildTask: IBuildTask, fn: NotifyFn) {
         (generator) => generator.id === testcaseConfig.generator
       );
       if (isDef(findGenerator)) {
-        fn({ action: ActionType.GEN_IN, name: findGenerator.fullname });
+        fn({ action: ActionType.GEN_IN, testcase: sendTestcaseConfig });
 
         const generator = problem.generator(
           findGenerator.fullname,
@@ -98,7 +99,11 @@ export async function build(buildTask: IBuildTask, fn: NotifyFn) {
         // generate fail
         if (result.verdict !== Verdict.Accepted) {
           logger.error(result);
-          fn({ action: ActionType.ERROR, message: result.message });
+          fn({
+            action: ActionType.ERROR,
+            message: result.message,
+            testcase: sendTestcaseConfig
+          });
           return;
         }
       } else {
@@ -117,6 +122,8 @@ export async function build(buildTask: IBuildTask, fn: NotifyFn) {
     // Validate
 
     // Generate ans
+
+    // Upload in and ans
   }
 
   fn({ action: ActionType.END });

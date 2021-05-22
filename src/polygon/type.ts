@@ -16,6 +16,7 @@ type PolygonMessage = {
   message?: string;
   name?: string;
   code?: IBuildCode;
+  testcase?: TestcaseConfig & { index: number };
 };
 
 export type NotifyFn = (message: PolygonMessage) => Promise<void> | void;
