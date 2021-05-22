@@ -43,6 +43,14 @@ export class TestCase {
     }
   }
 
+  readIn() {
+    return promises.readFile(this.inputFile, 'utf8');
+  }
+
+  readAnswer() {
+    return promises.readFile(this.answerFile, 'utf8');
+  }
+
   async writeIn(content: string): Promise<void> {
     await promises.writeFile(this.inputFile, content, 'utf8');
   }

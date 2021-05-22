@@ -76,6 +76,8 @@ export async function build(buildTask: IBuildTask, fn: NotifyFn) {
     buildTask.solution.language
   );
 
+  const examples: Array<{ in: string; answer: string }> = [];
+
   for (let i = 0; i < buildTask.testcases.length; i++) {
     const testcaseConfig = buildTask.testcases[i];
     const sendTestcaseConfig = { index: i + 1, ...testcaseConfig };
@@ -185,7 +187,20 @@ export async function build(buildTask: IBuildTask, fn: NotifyFn) {
       const folder = problem.minioTestcasesBasePath(buildTask.version);
       await testcase.uploadToMinio(folder);
     }
+
+    if (testcaseConfig.example) {
+      examples.push({
+        in: await testcase.readIn(),
+        answer: await testcase.readAnswer()
+      });
+    }
   }
+
+  // Upload examples
+  fn({
+    action: ActionType.EXAMPLE,
+    message: JSON.stringify(examples)
+  });
 
   fn({ action: ActionType.END });
 }

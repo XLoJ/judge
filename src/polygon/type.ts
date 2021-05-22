@@ -7,6 +7,7 @@ export enum ActionType {
   VALIDATE = 'validate',
   GEN_ANS = 'gen_ans',
   UPLOAD = 'upload',
+  EXAMPLE = 'example',
   END = 'end',
   ERROR = 'error'
 }
