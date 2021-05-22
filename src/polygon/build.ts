@@ -67,12 +67,12 @@ export async function build(buildTask: IBuildTask, fn: NotifyFn) {
   }
 
   const validator = problem.validator(
-    buildTask.validator.name,
+    buildTask.validator.fullname,
     buildTask.validator.language
   );
 
   const checker = problem.generator(
-    buildTask.solution.name,
+    buildTask.solution.fullname,
     buildTask.solution.language
   );
 
