@@ -1,4 +1,6 @@
+import fs from 'fs';
 import { Client } from 'minio';
+
 import { getLogger } from './logger';
 
 const logger = getLogger();
@@ -37,4 +39,33 @@ export function downloadFile(minioPath: string) {
   });
 }
 
-export function uploadFile() {}
+export function uploadFile(minioPath: string, localPath: string) {
+  if (client === undefined) {
+    const msg = 'Miss Min IO connect config';
+    logger.error(msg);
+    throw new Error(msg);
+  }
+  return new Promise<void>((res, rej) => {
+    fs.stat(localPath, (err, stats) => {
+      if (err) {
+        rej(err);
+        return;
+      }
+
+      const fileStream = fs.createReadStream(localPath);
+      client!.putObject(
+        BucketName,
+        minioPath,
+        fileStream,
+        stats.size,
+        (err) => {
+          if (err) {
+            rej(err);
+            return;
+          }
+          res();
+        }
+      );
+    });
+  });
+}

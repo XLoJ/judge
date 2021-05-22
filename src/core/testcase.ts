@@ -7,7 +7,7 @@ import { getLogger } from '../logger';
 
 import { Result } from './result';
 import { Generator } from './generator';
-import { downloadFile } from '../minio';
+import { downloadFile, uploadFile } from '../minio';
 
 const logger = getLogger();
 
@@ -55,6 +55,19 @@ export class TestCase {
     logger.info(`Download ${this.inputFile} from ${minioFilePath}`);
     const body = await downloadFile(minioFilePath);
     await this.writeIn(body);
+  }
+
+  async uploadToMinio(minioPath: string) {
+    {
+      const filepath = path.join(minioPath, `${this.name}.in`);
+      logger.info(`Upload ${this.inputFile} to ${filepath}`);
+      await uploadFile(filepath, this.inputFile);
+    }
+    {
+      const filepath = path.join(minioPath, `${this.name}.ans`);
+      logger.info(`Upload ${this.answerFile} to ${filepath}`);
+      await uploadFile(filepath, this.answerFile);
+    }
   }
 
   async genIn(generator: Generator, args: string[] = []): Promise<Result> {

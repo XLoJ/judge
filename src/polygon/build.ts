@@ -71,7 +71,7 @@ export async function build(buildTask: IBuildTask, fn: NotifyFn) {
     buildTask.validator.language
   );
 
-  const checker = problem.generator(
+  const solution = problem.generator(
     buildTask.solution.fullname,
     buildTask.solution.language
   );
@@ -161,9 +161,30 @@ export async function build(buildTask: IBuildTask, fn: NotifyFn) {
         testcase: sendTestcaseConfig,
         code: buildTask.solution
       });
+
+      const result = await testcase.genAns(solution);
+
+      if (result.verdict !== Verdict.Accepted) {
+        logger.error(result);
+        fn({
+          action: ActionType.ERROR,
+          message: JSON.stringify(result),
+          testcase: sendTestcaseConfig
+        });
+        return;
+      }
     }
 
     // Upload in and ans
+    {
+      fn({
+        action: ActionType.UPLOAD,
+        testcase: sendTestcaseConfig
+      });
+
+      const folder = problem.minioTestcasesBasePath(buildTask.version);
+      await testcase.uploadToMinio(folder);
+    }
   }
 
   fn({ action: ActionType.END });
