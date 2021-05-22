@@ -19,26 +19,42 @@ export async function build(buildTask: IBuildTask, fn: NotifyFn) {
   await problem.ensureTestcasesBasePath(buildTask.version);
 
   try {
-    fn({ action: ActionType.COMPILE, name: buildTask.checker.fullname });
+    fn({
+      action: ActionType.COMPILE,
+      name: buildTask.checker.fullname,
+      code: buildTask.checker
+    });
     await problem.ensureChecker(
       buildTask.checker.fullname,
       buildTask.checker.language
     );
 
-    fn({ action: ActionType.COMPILE, name: buildTask.validator.fullname });
+    fn({
+      action: ActionType.COMPILE,
+      name: buildTask.validator.fullname,
+      code: buildTask.validator
+    });
     await problem.ensureValidator(
       buildTask.validator.fullname,
       buildTask.validator.language
     );
 
-    fn({ action: ActionType.COMPILE, name: buildTask.solution.fullname });
+    fn({
+      action: ActionType.COMPILE,
+      name: buildTask.solution.fullname,
+      code: buildTask.solution
+    });
     await problem.ensureGenerator(
       buildTask.solution.fullname,
       buildTask.solution.language
     );
 
     for (const generator of buildTask.generators) {
-      fn({ action: ActionType.COMPILE, name: generator.fullname });
+      fn({
+        action: ActionType.COMPILE,
+        name: generator.fullname,
+        code: generator
+      });
       await problem.ensureGenerator(generator.fullname, generator.language);
     }
   } catch (err) {

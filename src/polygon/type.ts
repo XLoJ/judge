@@ -15,6 +15,7 @@ type PolygonMessage = {
   action: ActionType;
   message?: string;
   name?: string;
+  code?: IBuildCode;
 };
 
 export type NotifyFn = (message: PolygonMessage) => Promise<void> | void;
