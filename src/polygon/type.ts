@@ -1,8 +1,12 @@
 export enum ActionType {
   START = 'start',
-  DOWNLOAD = 'download',
   COMPILE = 'compile',
   COMPILE_ERROR = 'compile_error',
+  DOWNLOAD = 'download',
+  GEN_IN = 'gen_in',
+  VALIDATE = 'validate',
+  GEN_ANS = 'gen_ans',
+  UPLOAD = 'upload',
   END = 'end',
   ERROR = 'error'
 }

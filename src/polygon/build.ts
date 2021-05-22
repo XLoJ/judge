@@ -1,8 +1,12 @@
+import path from 'path';
+
 import { Problem } from '../core/problem';
 import { getLogger } from '../logger';
+import { CompileError } from '../error';
+import { isDef } from '../utils';
+import { Verdict } from '../verdict';
 
 import { ActionType, IBuildTask, NotifyFn, TestcaseConfig } from './type';
-import { CompileError } from '../error';
 
 const logger = getLogger();
 
@@ -47,17 +51,56 @@ export async function build(buildTask: IBuildTask, fn: NotifyFn) {
   }
 
   for (let i = 0; i < buildTask.testcases.length; i++) {
-    const testcase = buildTask.testcases[i];
-    if (testcase.type === 'file') {
-      const filename = testcase.filename;
-    } else if (testcase.type === 'generator') {
+    const testcaseConfig = buildTask.testcases[i];
+    const testcase = problem.testcase(buildTask.version, String(i + 1));
+
+    // Download static file testcase, or generate input
+    if (testcaseConfig.type === 'file') {
+      fn({ action: ActionType.DOWNLOAD, name: testcaseConfig.filename });
+
+      // Use static folder here
+      const fullFilename = path.join(
+        buildTask.problem,
+        'static',
+        testcaseConfig.filename
+      );
+
+      await testcase.downloadIn(fullFilename);
+    } else if (testcaseConfig.type === 'generator') {
+      const findGenerator = buildTask.generators.find(
+        (generator) => generator.id === testcaseConfig.generator
+      );
+      if (isDef(findGenerator)) {
+        fn({ action: ActionType.GEN_IN, name: findGenerator.fullname });
+
+        const generator = problem.generator(
+          findGenerator.fullname,
+          findGenerator.language
+        );
+        const result = await testcase.genIn(generator, testcaseConfig.args);
+
+        // generate fail
+        if (result.verdict !== Verdict.Accepted) {
+          logger.error(result);
+          fn({ action: ActionType.ERROR, message: result.message });
+          return;
+        }
+      } else {
+        throw new Error(
+          `Unexpected generator ${testcaseConfig.generator} at ${i}-th testcase`
+        );
+      }
     } else {
       throw new Error(
         `Unexpected testcase type ${
-          (testcase as TestcaseConfig).type
+          (testcaseConfig as TestcaseConfig).type
         } at ${i}-th testcase`
       );
     }
+
+    // Validate
+
+    // Generate ans
   }
 
   fn({ action: ActionType.END });

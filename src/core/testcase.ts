@@ -7,7 +7,6 @@ import { getLogger } from '../logger';
 
 import { Result } from './result';
 import { Generator } from './generator';
-import { Problem } from './problem';
 import { downloadFile } from '../minio';
 
 const logger = getLogger();
@@ -29,16 +28,16 @@ export class TestCase {
     try {
       await promises.access(this.inputFile, constants.R_OK);
     } catch (err) {
-      logger.info(`Download ${this.inputFile}`);
       const filepath = path.join(minioPath, `${this.name}.in`);
+      logger.info(`Download ${this.inputFile} from ${filepath}`);
       const body = await downloadFile(filepath);
       await this.writeIn(body);
     }
     try {
       await promises.access(this.answerFile, constants.R_OK);
     } catch (err) {
-      logger.info(`Download ${this.answerFile}`);
       const filepath = path.join(minioPath, `${this.name}.ans`);
+      logger.info(`Download ${this.answerFile} from ${filepath}`);
       const body = await downloadFile(filepath);
       await this.writeAns(body);
     }
@@ -50,6 +49,12 @@ export class TestCase {
 
   private async writeAns(content: string = ''): Promise<void> {
     await promises.writeFile(this.answerFile, content, 'utf8');
+  }
+
+  async downloadIn(minioFilePath: string) {
+    logger.info(`Download ${this.inputFile} from ${minioFilePath}`);
+    const body = await downloadFile(minioFilePath);
+    await this.writeIn(body);
   }
 
   async genIn(generator: Generator, args: string[] = []): Promise<Result> {
