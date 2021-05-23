@@ -202,5 +202,9 @@ export async function build(buildTask: IBuildTask, fn: NotifyFn) {
     message: JSON.stringify(examples)
   });
 
-  fn({ action: ActionType.END });
+  fn({
+    action: ActionType.END,
+    code: buildTask.checker,
+    message: String(buildTask.testcases.length)
+  });
 }
