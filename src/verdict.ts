@@ -1,4 +1,5 @@
 export enum Verdict {
+  Running = -5,
   Compiling = -4,
   Waiting,
   Finished,

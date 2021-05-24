@@ -62,6 +62,10 @@ export interface CompilingMessage {
   verdict: Verdict.Compiling;
 }
 
+export interface RunningMessage {
+  verdict: Verdict.Running;
+}
+
 export interface FinishedMessage {
   verdict: Verdict.Finished;
   pass: number;
@@ -90,6 +94,7 @@ export interface JudgingMessage {
 export type ResultMessage =
   | WaitingMessage
   | CompilingMessage
+  | RunningMessage
   | FinishedMessage
   | JudgingMessage
   | ErrorMessage;
