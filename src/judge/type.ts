@@ -64,6 +64,7 @@ export interface CompilingMessage {
 
 export interface FinishedMessage {
   verdict: Verdict.Finished;
+  pass: number;
 }
 
 export interface ErrorMessage {
@@ -80,6 +81,7 @@ export interface JudgingMessage {
   testcaseId: string;
   time: number; // ms
   memory: number; // KB
+  pass: number;
   stdout?: string;
   stderr?: string;
   checkerOut?: string;

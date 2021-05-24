@@ -3,11 +3,13 @@ import { FastifyInstance, FastifyRequest } from 'fastify';
 import {
   JudgeSubmissionDTO,
   JudgeSubmissionSchema,
+  NotifyFn,
   ResultMessage
 } from './type';
 
 import { ClassicJudge } from './classic';
 import { isDef } from '../utils';
+import { Verdict } from '../verdict';
 
 async function judge(body: JudgeSubmissionDTO) {
   const classicJudge = new ClassicJudge();
@@ -45,8 +47,11 @@ export function registerJudgeRouter(app: FastifyInstance) {
         app.log.info(`Handle Rabbit MQ message: Judge "${body.id}"`);
 
         const classicJudge = new ClassicJudge();
-        await classicJudge.judge((msg) => {
+
+        let index = 0;
+        const send: NotifyFn = (msg) => {
           const response = {
+            index: ++index,
             from: app.config.SERVER_NAME,
             timestamp: new Date().toISOString(),
             id: body.id,
@@ -54,7 +59,17 @@ export function registerJudgeRouter(app: FastifyInstance) {
           };
           const buffer = Buffer.from(JSON.stringify(response));
           app.amqpChannel.sendToQueue(app.config.MSG_QUEUE, buffer);
-        }, body);
+        };
+
+        try {
+          await classicJudge.judge(send, body);
+        } catch (err) {
+          // send error message
+          send({
+            verdict: Verdict.SystemError,
+            message: err.message
+          });
+        }
 
         app.amqpChannel.ack(msg);
       },

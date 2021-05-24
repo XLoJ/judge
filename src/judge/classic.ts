@@ -58,6 +58,7 @@ export class ClassicJudge {
     );
     const runner = new Runner(submission, checker, maxTime, maxMemory);
 
+    let pass = 0;
     for (const testcaseId of cases) {
       const testcase = problem.testcase(casesVersion, testcaseId);
 
@@ -66,11 +67,14 @@ export class ClassicJudge {
 
         const result = await runner.run(testcase, { returnReport });
 
+        if (result.verdict === Verdict.Accepted) pass++;
+
         const message: JudgingMessage = {
           testcaseId,
           verdict: result.verdict,
           time: result.time,
-          memory: result.memory
+          memory: result.memory,
+          pass
         };
 
         if (returnReport) {
@@ -109,7 +113,7 @@ export class ClassicJudge {
       }
     }
 
-    notify({ verdict: Verdict.Finished });
+    notify({ verdict: Verdict.Finished, pass });
 
     await runner.clear();
   }
