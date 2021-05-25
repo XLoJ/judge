@@ -29,6 +29,7 @@ export const ENV = [
   'LANGUAGE=en_US:en',
   'LC_ALL=en_US.UTF-8',
   // GO build env
+  'CGO_ENABLED=0',
   'GOPATH=/root/go',
   'TMPDIR=/app/tmp',
   'GOCACHE=/app/tmp'
