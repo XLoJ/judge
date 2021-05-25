@@ -39,7 +39,7 @@ export class ClassicJudge {
     await notify({ verdict: Verdict.Compiling });
 
     try {
-      await submission.compile(code, Math.max(maxTime * 5, 15));
+      await submission.compile(code, Math.min(maxTime * 5, 15));
     } catch (err) {
       const exceptionInfo = CompileError.toHttpException(err);
       await notify(exceptionInfo);

@@ -30,6 +30,7 @@ const LangConfig: Record<string, ILangConfig> = {
         '-std=c99',
         '-DONLINE_JUDGE',
         '-lm',
+        '-fmax-errors=127',
         '-o',
         '${compiledFile}',
         '${sourceFile}'
@@ -51,6 +52,7 @@ const LangConfig: Record<string, ILangConfig> = {
         '-std=c++11',
         '-DONLINE_JUDGE',
         '-lm',
+        '-fmax-errors=127',
         '-o',
         '${compiledFile}',
         '${sourceFile}'
@@ -72,6 +74,7 @@ const LangConfig: Record<string, ILangConfig> = {
         '-std=c++14',
         '-DONLINE_JUDGE',
         '-lm',
+        '-fmax-errors=127',
         '-o',
         '${compiledFile}',
         '${sourceFile}'
@@ -93,6 +96,7 @@ const LangConfig: Record<string, ILangConfig> = {
         '-std=c++17',
         '-DONLINE_JUDGE',
         '-lm',
+        '-fmax-errors=127',
         '-o',
         '${compiledFile}',
         '${sourceFile}'
