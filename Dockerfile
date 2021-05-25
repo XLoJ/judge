@@ -13,6 +13,11 @@ RUN apt-get update \
     && npm install -g yarn \
     && wget https://raw.githubusercontent.com/MikeMirzayanov/testlib/master/testlib.h -O /usr/local/include/testlib.h
 
+# Official: https://golang.org/dl/go1.16.4.linux-amd64.tar.gz
+RUN wget https://studygolang.com/dl/golang/go1.16.4.linux-amd64.tar.gz \
+    && tar -C /usr/local -xzf go1.16.4.linux-amd64.tar.gz \
+    && rm go1.16.4.linux-amd64.tar.gz
+
 ADD . /judge
 
 WORKDIR /judge

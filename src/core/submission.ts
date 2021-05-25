@@ -132,7 +132,9 @@ export class Submission {
       '--rlimit_stack',
       Math.max(maxMemory + 32, 256),
       '--rlimit_fsize',
-      OUTPUT_LIMIT
+      OUTPUT_LIMIT,
+      '--rlimit_nofile', // Go build
+      1024
     ];
 
     const extraFiles = [];
@@ -217,6 +219,7 @@ export class Submission {
         path.join(compileDir, this.langConfig.sourceFileName),
         code
       ),
+      promises.mkdir(path.join(compileDir, 'tmp')),
       promises.writeFile(outFile, ''),
       promises.writeFile(errorFile, '')
     ]);

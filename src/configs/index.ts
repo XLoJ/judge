@@ -27,7 +27,11 @@ export const ENV = [
   'PATH=' + process.env.PATH,
   'LANG=en_US.UTF-8',
   'LANGUAGE=en_US:en',
-  'LC_ALL=en_US.UTF-8'
+  'LC_ALL=en_US.UTF-8',
+  // GO build env
+  'GOPATH=/root/go',
+  'TMPDIR=/app/tmp',
+  'GOCACHE=/app/tmp'
 ];
 
 function getpwnam(name: string) {

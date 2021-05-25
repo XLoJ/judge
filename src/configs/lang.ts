@@ -145,6 +145,18 @@ const LangConfig: Record<string, ILangConfig> = {
       args: ['${executableFile}']
     }
   },
+  go: {
+    sourceFileName: 'sub.go',
+    compile: {
+      command: '/usr/local/go/bin/go',
+      args: ['build', '-o', '${compiledFile}', '${sourceFile}']
+    },
+    compiledExtension: 'bingo',
+    execute: {
+      command: './${executableFile}',
+      args: []
+    }
+  },
   text: {
     sourceFileName: 'sub.txt',
     compile: {
