@@ -18,6 +18,15 @@ RUN wget https://studygolang.com/dl/golang/go1.16.4.linux-amd64.tar.gz \
     && tar -C /usr/local -xzf go1.16.4.linux-amd64.tar.gz \
     && rm go1.16.4.linux-amd64.tar.gz
 
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
+RUN apt-get install -y zip unzip \
+    && curl -s https://get.sdkman.io | bash \
+    && chmod a+x "$HOME/.sdkman/bin/sdkman-init.sh" \
+    && source "$HOME/.sdkman/bin/sdkman-init.sh" \
+    && sdk install kotlin 1.5.10 \
+    && cp -r "$HOME/.sdkman/candidates/kotlin/1.5.10" /usr/bin/kotlin
+
 ADD . /judge
 
 WORKDIR /judge
