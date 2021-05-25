@@ -5,11 +5,13 @@ interface ICompileConfig {
   command: string;
   args: string[];
   out?: string;
+  // default out: compile.out
+  // use last out as the final compile output name
 }
 
 export interface ILangConfig {
   sourceFileName: string;
-  compile: ICompileConfig | ICompileConfig[]; // The last compile config can not have "out" filed
+  compile: ICompileConfig | ICompileConfig[];
   compiledExtension: string;
   execute: {
     command: string;
@@ -143,6 +145,19 @@ const LangConfig: Record<string, ILangConfig> = {
     execute: {
       command: '/usr/bin/python3',
       args: ['${executableFile}']
+    }
+  },
+  kotlin: {
+    sourceFileName: 'sub.kt',
+    compile: {
+      command: '/usr/bin/kotlin/bin/kotlinc',
+      args: ['${sourceFile}', '-include-runtime', '-d', '${compiledFile}'],
+      out: 'compile.jar'
+    },
+    compiledExtension: 'jar',
+    execute: {
+      command: '/usr/bin/java',
+      args: ['-jar', '${executableFile}']
     }
   },
   go: {

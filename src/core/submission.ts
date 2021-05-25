@@ -228,6 +228,7 @@ export class Submission {
     const compileSteps =
       compileConfigs instanceof Array ? compileConfigs : [compileConfigs];
 
+    let finalOut: string | null = null;
     try {
       for (const { command, args, out = 'compile.out' } of compileSteps) {
         const result = await this.run({
@@ -262,11 +263,13 @@ export class Submission {
             );
           }
         }
+
+        finalOut = out;
       }
 
       const executeFilePath = this.fullFilePath;
       await promises.copyFile(
-        path.join(compileDir, 'compile.out'),
+        path.join(compileDir, finalOut ?? 'compile.out'),
         executeFilePath
       );
       await promises.chmod(executeFilePath, 0o0775);
