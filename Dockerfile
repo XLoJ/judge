@@ -4,10 +4,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
     && apt-get install -y \
-              wget git curl apt-utils zip unzip \
+              wget git curl apt-utils locales zip unzip \
               python python3 gcc g++ openjdk-8-jdk \
               libtool make pkg-config bison flex \
               libprotobuf-dev protobuf-compiler libnl-3-dev libnl-route-3-dev libboost-all-dev \
+    && locale-gen en_US.UTF-8 \
     && curl -sL https://deb.nodesource.com/setup_14.x | bash - \
     && apt-get install -y nodejs \
     && npm install -g yarn \
@@ -18,12 +19,9 @@ RUN wget https://studygolang.com/dl/golang/go1.16.4.linux-amd64.tar.gz \
     && tar -C /usr/local -xzf go1.16.4.linux-amd64.tar.gz \
     && rm go1.16.4.linux-amd64.tar.gz
 
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
-
 RUN curl -s https://get.sdkman.io | bash \
     && chmod a+x "$HOME/.sdkman/bin/sdkman-init.sh" \
-    && source "$HOME/.sdkman/bin/sdkman-init.sh" \
-    && sdk install kotlin 1.5.10 \
+    && /bin/bash -c 'source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install kotlin 1.5.10' \
     && cp -r "$HOME/.sdkman/candidates/kotlin/1.5.10/" /usr/bin/kotlin/
 
 ADD . /judge

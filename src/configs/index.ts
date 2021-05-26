@@ -24,10 +24,10 @@ export const RUN_GROUP_ID = getgrnam('nogroup');
 export const OUTPUT_LIMIT = 256;
 
 export const ENV = [
-  'PATH=' + process.env.PATH,
-  'LANG=en_US.UTF-8',
-  'LANGUAGE=en_US:en',
-  'LC_ALL=en_US.UTF-8',
+  // 'PATH=' + process.env.PATH,
+  // 'LANG=en_US.UTF-8',
+  // 'LANGUAGE=en_US:en',
+  // 'LC_ALL=en_US.UTF-8',
   // GO build env
   'CGO_ENABLED=0',
   'GOPATH=/root/go',

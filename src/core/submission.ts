@@ -26,6 +26,13 @@ const envArgs = ENV.reduce((args: string[], env: string) => {
   return args;
 }, []);
 
+for (const key in process.env) {
+  if (!key.startsWith('npm')) {
+    envArgs.push('-E');
+    envArgs.push(`${key}=${process.env[key]}`);
+  }
+}
+
 const logger = getLogger();
 
 export class Submission {
