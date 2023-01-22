@@ -2,12 +2,8 @@ name: Docker Image CI
 
 on:
   push:
-    branches:
-      - master
-      - nest
-      - fastify
-  schedule:
-    - cron: "0 0 * * 1"
+  # schedule:
+  #  - cron: "0 0 * * 1"
 
 jobs:
 
