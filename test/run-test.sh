@@ -14,6 +14,12 @@ chgrp compiler -R /sys/fs/cgroup/memory/NSJAIL /sys/fs/cgroup/cpu/NSJAIL /sys/fs
 chown compiler:compiler ./run/temp ./run/submission ./run/problems
 chown compiler:compiler ./run/checker ./run/interactor ./run/generator ./run/validator
 
+ls /sys/fs/cgroup/
+ls /sys/fs/cgroup/cpuacct/
+ls /sys/fs/cgroup/memory/
+ls /sys/fs/cgroup/cpu/
+ls /sys/fs/cgroup/pids/
+
 yarn jest --config test-core.config.json
 
 if [ $? -ne 0 ]; then
