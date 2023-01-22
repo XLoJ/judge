@@ -31,7 +31,8 @@ WORKDIR /judge
 RUN git submodule update --init --recursive \
     && cd nsjail && make && mv nsjail /bin/nsjail && cd .. \
     && ls /sys/fs/cgroup/ \
-    && ls /sys/fs/cgroup/cpuacct
+    && ls /sys/fs/cgroup/cpuacct \
+    && ls /sys/fs/cgroup/memory
 
 RUN rm -rf node_modules \
     && yarn install --production=false \
